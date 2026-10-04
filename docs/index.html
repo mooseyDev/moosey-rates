@@ -67,10 +67,31 @@ img{display:block;max-width:100%}
 .links a:hover::after{transform:scaleX(1)}
 
 /* ---------- hero ---------- */
-.hero{
-  min-height:100svh;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,5rem);
-  align-items:center;padding:7rem clamp(1rem,6vw,6rem) 4rem;max-width:1440px;margin:0 auto;
-}
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:clip;
+  padding:7rem clamp(1rem,6vw,6rem) 4rem max(clamp(1rem,6vw,6rem),calc((100vw - 1320px) / 2))}
+.hero-text{position:relative;z-index:1;max-width:44rem}
+
+/* The painting bleeds in from the right. Two copies: a blurred one that reaches further in,
+   and a sharp one on top that fades out sooner, so it goes sharp -> haze -> nothing. */
+.hero-art{position:absolute;top:0;right:0;bottom:0;width:min(60%,calc(100% - max(clamp(1rem,6vw,6rem),calc((100vw - 1320px) / 2)) - 500px));animation:settle 9s var(--ease) both}
+.hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 52%}
+.hero-art .haze{filter:blur(26px) saturate(1.15) brightness(.75);opacity:.75;transform:scale(1.08);
+  -webkit-mask:linear-gradient(to right,transparent 0%,#000 24%),linear-gradient(to bottom,#000 70%,transparent);
+  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 0%,#000 24%) intersect,linear-gradient(to bottom,#000 70%,transparent);
+  animation:fade 2.4s .2s ease both}
+.hero-art .sharp{
+  -webkit-mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%),linear-gradient(to bottom,#000 78%,transparent);
+  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%) intersect,linear-gradient(to bottom,#000 78%,transparent);
+  animation:develop 3.2s .4s var(--ease) both}
+/* only darken under the nav bar; a full vignette left a visible seam at the art's left edge */
+.hero-art::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(17,12,9,.7),transparent 14%)}
+.plate-cap{position:absolute;z-index:1;right:clamp(1rem,4vw,3rem);bottom:2rem;font-style:italic;font-size:.92rem;
+  color:var(--paper-dim);text-shadow:0 1px 10px #000;animation:rise 1s 1.4s var(--ease) both}
+.plate-cap span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;margin-right:.3rem}
+@keyframes settle{from{transform:scale(1.06)}to{transform:none}}
+@keyframes fade{from{opacity:0}}
+@keyframes breathe{from{transform:none}to{transform:scale(1.05) translateY(-1%)}}
 .kicker{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;font:.8rem/1 "IM Fell English SC",serif;letter-spacing:.2em;color:var(--muted);
   padding-bottom:1.1rem;border-bottom:1px solid var(--line);margin-bottom:1.6rem;animation:rise 1s .1s var(--ease) both}
 .kicker span+span::before{content:"✦";margin-right:1.4rem;color:var(--blood);font-size:.6rem;vertical-align:.15em}
@@ -89,14 +110,12 @@ h1 .w2{display:block;padding-left:.55em;color:var(--amber);
 .contents a:hover{color:var(--amber-2);padding-left:.5rem}
 .contents a:hover .pg{color:var(--amber)}
 
-.plate{justify-self:center;width:min(100%,430px);animation:rise 1.4s .3s var(--ease) both}
-.frame{position:relative;padding:12px;border:1px solid rgba(236,223,198,.28);background:rgba(236,223,198,.03);
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 120px -30px rgba(194,74,44,.45)}
-.frame::before{content:"";position:absolute;inset:5px;border:1px solid rgba(236,223,198,.12);pointer-events:none}
-.frame img{width:100%;height:auto;aspect-ratio:1100/1925;object-fit:cover;max-height:72svh;
-  animation:develop 3.2s .4s var(--ease) both}
-.plate figcaption{margin-top:.9rem;text-align:center;font-style:italic;color:var(--muted);font-size:.95rem}
-.plate figcaption span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;color:var(--paper-dim);margin-right:.3rem}
+.guest-row a{color:#cfc5f5}
+.guest-tag{margin-left:.6rem;font:.68rem/1 "IM Fell English SC",serif;font-style:normal;letter-spacing:.16em;
+  color:#b3a4ff;text-shadow:0 0 12px rgba(143,124,240,.55);vertical-align:.15em}
+.guest-tag::before{content:"✦ ";font-size:.8em}
+.contents .guest-row a:hover{color:#ddd4ff}
+.contents .guest-row a:hover .pg{color:#b3a4ff}
 
 /* ---------- section heads ---------- */
 section{position:relative;max-width:1360px;margin:0 auto;padding:clamp(4rem,9vw,8rem) clamp(1rem,4vw,3rem)}
@@ -230,15 +249,20 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .colophon .norsk{margin-top:1.4rem;font-style:italic;color:var(--amber-2)}
 
 /* ---------- the guest column: same paper, different night ---------- */
+/* eased stops over ~22rem so the night creeps in rather than starting at a line */
 .guest-wrap{position:relative;overflow:hidden;margin-top:clamp(2rem,5vw,4rem);
-  background:radial-gradient(900px 520px at 50% 6%,rgba(143,124,240,.17),transparent 70%),
-             linear-gradient(to bottom,var(--ink),#110f1f 12%,#110f1f 88%,var(--ink))}
+  background:radial-gradient(900px 560px at 50% 22rem,rgba(143,124,240,.15),transparent 70%),
+    linear-gradient(to bottom,var(--ink) 0,#110c0b 4rem,#110d11 9rem,#110e18 14rem,#110f1d 19rem,#110f1f 23rem,
+      #110f1f calc(100% - 23rem),#110f1d calc(100% - 19rem),#110e18 calc(100% - 14rem),#110d11 calc(100% - 9rem),#110c0b calc(100% - 4rem),var(--ink) 100%)}
+.guest-wrap>.chapter{padding-top:clamp(5rem,9vw,7rem);padding-bottom:clamp(6rem,12vw,9rem)}
 .stars,.stars::after{position:absolute;inset:0;pointer-events:none;
   background-image:radial-gradient(1px 1px at 12% 18%,#e9e2ff,transparent),radial-gradient(1px 1px at 78% 9%,#e9e2ff,transparent),
     radial-gradient(1.5px 1.5px at 33% 42%,#cfc5ff,transparent),radial-gradient(1px 1px at 91% 35%,#e9e2ff,transparent),
     radial-gradient(1px 1px at 55% 71%,#e9e2ff,transparent),radial-gradient(1.5px 1.5px at 6% 83%,#cfc5ff,transparent),
     radial-gradient(1px 1px at 67% 91%,#e9e2ff,transparent),radial-gradient(1px 1px at 24% 64%,#e9e2ff,transparent);
-  background-size:520px 520px;opacity:.55;animation:twinkle-field 7s ease-in-out infinite alternate}
+  background-size:520px 520px;opacity:.55;animation:twinkle-field 7s ease-in-out infinite alternate;
+  -webkit-mask:linear-gradient(to bottom,transparent,#000 22rem,#000 calc(100% - 22rem),transparent);
+  mask:linear-gradient(to bottom,transparent,#000 22rem,#000 calc(100% - 22rem),transparent)}
 .stars::after{content:"";background-size:330px 330px;background-position:140px 90px;animation-delay:-3.5s;opacity:.4}
 @keyframes twinkle-field{from{opacity:.2}to{opacity:.65}}
 .guest .sec-head::before{display:none}  /* the cat is the chapter mark here */
@@ -313,9 +337,20 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .nuggets ul{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr;padding-top:6rem}
-  .plate{width:min(72%,340px)}
-  .frame img{max-height:60svh}
+  /* phones: the painting becomes a cover that dissolves downwards into the title */
+  .hero{display:block;padding:56svh 1.25rem 3rem}
+  .hero-art{width:100%;bottom:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
+  .hero-art img{object-position:50% 46%}
+  .hero-art .haze{transform:scale(1.1);
+    -webkit-mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent)}
+  .hero-art .sharp{-webkit-mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);
+    mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%)}
+  .hero-art::after{background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
+  .hero h1{text-shadow:0 4px 30px rgba(17,12,9,.9)}
+  .hero h1 .w2{text-shadow:0 0 .35em rgba(224,138,50,.35),0 4px 30px rgba(17,12,9,.9)}
+  .kicker{border-bottom-color:rgba(236,223,198,.22)}
+  .plate-cap{display:none}
+  .kicker{text-shadow:0 1px 12px rgba(17,12,9,.95)}
   .kicker span:nth-child(3){display:none}
   .memoriam{grid-template-columns:1fr;justify-items:center;text-align:center}
   .grid{grid-template-columns:repeat(3,1fr)}
@@ -348,6 +383,10 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 </nav>
 
 <header class="hero" id="top">
+  <div class="hero-art">
+    <img class="haze" src="art/moose-ship.jpg" alt="" aria-hidden="true">
+    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1100" height="1925">
+  </div>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
     <h1><span class="w1">Moosey</span><em class="w2">Rates</em></h1>
@@ -355,13 +394,10 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
       Scores out of ten. <em>Opinions out of line.</em></p>
     <div class="contents">
       <h2>Contents</h2>
-      <ol><li><a href="#five"><span>The Five</span><span class="leader"></span><span class="pg">Frontis.</span></a></li><li><a href="#music"><span>Music</span><span class="leader"></span><span class="pg">I</span></a></li><li><a href="#film"><span>Film</span><span class="leader"></span><span class="pg">II</span></a></li><li><a href="#series"><span>Series</span><span class="leader"></span><span class="pg">III</span></a></li><li><a href="#games"><span>Games</span><span class="leader"></span><span class="pg">IV</span></a></li><li><a href="#books"><span>Books</span><span class="leader"></span><span class="pg">V</span></a></li></ol>
+      <ol><li><a href="#five"><span>The Five</span><span class="leader"></span><span class="pg">Frontis.</span></a></li><li><a href="#music"><span>Music</span><span class="leader"></span><span class="pg">I</span></a></li><li><a href="#film"><span>Film</span><span class="leader"></span><span class="pg">II</span></a></li><li><a href="#series"><span>Series</span><span class="leader"></span><span class="pg">III</span></a></li><li><a href="#games"><span>Games</span><span class="leader"></span><span class="pg">IV</span></a></li><li class=guest-row><a href="#books"><span>Books<em class=guest-tag>special guest</em></span><span class="leader"></span><span class="pg">V</span></a></li></ol>
     </div>
   </div>
-  <figure class="plate">
-    <div class="frame"><img src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1100" height="1925"></div>
-    <figcaption><span>Pl. I.</span> The critic, en route to an opinion.</figcaption>
-  </figure>
+  <p class="plate-cap"><span>Pl. I.</span> The critic, en route to an opinion.</p>
 </header>
 
 <section class="five" id="five">
