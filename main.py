@@ -463,7 +463,7 @@ def fetch_art():
     # Plates: the two paintings, shrunk from ~600 KB PNGs to something a phone can stomach.
     ART.mkdir(parents=True, exist_ok=True)
     plates = {
-        "moose-ship.jpg": ("Portrate Moose on the Red Sea Best.png", 1100),
+        "moose-ship.jpg": ("Portrate Moose on the Red Sea Best.png", 1792),  # native size; it was upscaled and soft
         "wizard-swirl.jpg": ("moose and a wizard and an object.png", 1800),
     }
     for name, (src, size) in plates.items():
@@ -534,6 +534,7 @@ def chapter(c, cards):
   <section class="chapter{' guest' if guest else ''}" id="{c['key']}">
     <header class="sec-head" data-num="{c['num']}">
       {cat_svg() if guest else ''}
+      {'<div class="gaze" aria-hidden="true">' + '<i></i>' * (GAZE_COLS * GAZE_ROWS) + '</div>' if guest else ''}
       <p class="eyebrow">Chapter {c['num']}{' · A guest column' if guest else ''}</p>
       <h2>{c['name']}</h2>
       <p class="sec-deck">{e(c['deck'])}</p>
@@ -545,6 +546,35 @@ def chapter(c, cards):
   </section>"""
     # the guest column gets its own night sky, so it needs a full-width wrapper
     return f'<div class="guest-wrap"><div class="stars"></div>{html_}</div>' if guest else html_
+
+
+# Eye tracking without JavaScript: an invisible grid of hover cells over the cat's header.
+# Whichever cell the cursor is in, :has() points the pupils at it. Same trick for the book cards.
+GAZE_COLS, GAZE_ROWS = 12, 6
+
+
+def gaze_css():
+    def look(dx, dy):
+        dist = math.hypot(dx, dy) or 1
+        reach = min(1, dist / 220)  # near the face the pupils barely move, like real eyes
+        return f"{4 * reach * dx / dist:.2f}px,{2.6 * reach * dy / dist:.2f}px"
+
+    # rough desktop geometry of the header zone, in CSS px, measured from the eyes
+    zone_w, zone_h, eye_y = 1440, 660, 185
+    rules = []
+    for k in range(GAZE_COLS * GAZE_ROWS):
+        r, c = divmod(k, GAZE_COLS)
+        dx = (c + 0.5) / GAZE_COLS * zone_w - zone_w / 2
+        dy = (r + 0.5) / GAZE_ROWS * zone_h - eye_y
+        rules.append(f".guest-wrap:has(.gaze i:nth-child({k + 1}):hover) .pupils{{animation:none;transform:translate({look(dx, dy)})}}")
+    cards = []
+    for i in range(10):
+        r, c = divmod(i, 5)
+        dx = (c + 0.5) / 5 * 1260 - 630
+        dy = 640 + r * 440
+        cards.append(f".guest-wrap:has(.grid .card:nth-child({i + 1}):hover) .pupils{{animation:none;transform:translate({look(dx, dy)})}}")
+    return ("\n".join(rules) + "\n@media (min-width:1101px){\n" + "\n".join(cards) + "\n}\n"
+            + ".guest-wrap:has(.mentions:hover) .pupils{animation:none;transform:translate(0px,2.6px)}\n")
 
 
 def fluff(cx, cy, rx, ry, n, amp, seed, side_boost=0.0, bottom_boost=0.0):
@@ -575,23 +605,26 @@ def cat_svg():
     chest = fluff(100, 140, 30, 26, 14, 0.12, 9)
     head = fluff(100, 96, 40, 35, 30, 0.07, 5, side_boost=0.16, bottom_boost=0.08)
     # the tail is a string of overlapping puffs along a curve, which reads as one fluffy brush
-    puffs = "".join(
+    puffs = [
         f'<circle cx="{140 + 30 * math.sin(u * 2.4) - 4 * u:.1f}" cy="{196 - 70 * u + 10 * u * u:.1f}" '
         f'r="{13 - 5 * u + (2.2 if i % 2 else 0):.1f}"/>'
         for i, u in ((i, i / 15) for i in range(16))
-    )
+    ]
+    # split at the ninth puff so the tip can flick on its own joint while the whole tail sways
+    base, end = "".join(puffs[:9]), "".join(puffs[9:])
     tip = fluff(166.5, 128, 10, 10, 9, 0.22, 11)
     return f"""<svg class="cat" viewBox="0 0 200 230" role="img" aria-label="A long-haired black cat with golden eyes, sitting under a crescent moon">
         <defs>
           <radialGradient id="halo"><stop offset="0" stop-color="#8f7cf0" stop-opacity=".42"/><stop offset="1" stop-color="#8f7cf0" stop-opacity="0"/></radialGradient>
           <radialGradient id="iris" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#ffe08a"/><stop offset=".65" stop-color="#f2a93b"/><stop offset="1" stop-color="#b8661e"/></radialGradient>
+          <clipPath id="irises"><ellipse cx="84" cy="97" rx="10" ry="11"/><ellipse cx="116" cy="97" rx="10" ry="11"/></clipPath>
           <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#c9bcff" flood-opacity=".55"/></filter>
         </defs>
         <circle cx="100" cy="120" r="95" fill="url(#halo)"/>
         <path class="moon" d="M160,22 a18,18 0 1,0 18,26 a14,14 0 1,1 -18,-26Z"/>
         {sparkle(30, 46, 6, 0)}{sparkle(176, 92, 4.5, 1.3)}{sparkle(22, 150, 4, 2.1)}{sparkle(60, 20, 3.5, .7)}
         <g filter="url(#rim)" fill="{fur}">
-          <g class="tail">{puffs}<path d="{tip}"/></g>
+          <g class="tail">{base}<g class="tail-tip">{end}<path d="{tip}"/></g></g>
           <path d="{body}"/><path d="{chest}"/>
           <ellipse cx="84" cy="206" rx="13" ry="9"/><ellipse cx="116" cy="206" rx="13" ry="9"/>
           <path d="M60,86 L68,48 Q72,41 78,46 L98,66Z"/><path d="M140,86 L132,48 Q128,41 122,46 L102,66Z"/>
@@ -605,7 +638,7 @@ def cat_svg():
         </g>
         <g class="eyes">
           <ellipse cx="84" cy="97" rx="10" ry="11" fill="url(#iris)"/><ellipse cx="116" cy="97" rx="10" ry="11" fill="url(#iris)"/>
-          <ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/>
+          <g clip-path="url(#irises)"><g class="pupils"><ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/></g></g>
           <circle cx="80.5" cy="92.5" r="2.6" fill="#fff"/><circle cx="112.5" cy="92.5" r="2.6" fill="#fff"/>
           <circle cx="88" cy="103" r="1.1" fill="#fff" opacity=".8"/><circle cx="120" cy="103" r="1.1" fill="#fff" opacity=".8"/>
         </g>
@@ -659,7 +692,7 @@ def build():
     )
     nav = "".join(f'<a href="#{k}">{n}</a>' for k, n, _, _ in contents)
 
-    page = TEMPLATE.format(css=CSS, five=five, chapters=chapters, memorial=memorial(MEMORIAL), nuggets=nuggets, toc=toc, nav=nav)
+    page = TEMPLATE.format(css=CSS + gaze_css(), five=five, chapters=chapters, memorial=memorial(MEMORIAL), nuggets=nuggets, toc=toc, nav=nav)
     OUT.mkdir(exist_ok=True)
     (OUT / "index.html").write_text(page, encoding="utf-8")
     (OUT / ".nojekyll").touch()  # stop Pages running Jekyll over a site that doesn't need it
@@ -693,7 +726,7 @@ TEMPLATE = """<!doctype html>
 <header class="hero" id="top">
   <div class="hero-art">
     <img class="haze" src="art/moose-ship.jpg" alt="" aria-hidden="true">
-    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1100" height="1925">
+    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1024" height="1792">
   </div>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
@@ -809,19 +842,22 @@ img{display:block;max-width:100%}
 
 /* The painting bleeds in from the right. Two copies: a blurred one that reaches further in,
    and a sharp one on top that fades out sooner, so it goes sharp -> haze -> nothing. */
-.hero-art{position:absolute;top:0;right:0;bottom:0;width:min(60%,calc(100% - max(clamp(1rem,6vw,6rem),calc((100vw - 1320px) / 2)) - 500px));animation:settle 9s var(--ease) both}
+/* shown whole at its own proportions, so it's never blown up past its pixels */
+.hero-art{position:absolute;top:0;bottom:0;margin:auto 0;right:clamp(0rem,6vw,9rem);height:min(96%,64rem);aspect-ratio:1024/1792;
+  animation:settle 9s var(--ease) both}
 .hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 52%}
-.hero-art .haze{filter:blur(26px) saturate(1.15) brightness(.75);opacity:.75;transform:scale(1.08);
-  -webkit-mask:linear-gradient(to right,transparent 0%,#000 24%),linear-gradient(to bottom,#000 70%,transparent);
-  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 0%,#000 24%) intersect,linear-gradient(to bottom,#000 70%,transparent);
+.hero-art .haze{filter:blur(30px) saturate(1.2) brightness(.8);opacity:.9;transform:scale(1.22);
+  /* closest-side: the fade must reach zero inside the box, or the box edge shows as a hard line */
+  -webkit-mask:radial-gradient(closest-side,#000 30%,transparent 100%);
+  mask:radial-gradient(closest-side,#000 30%,transparent 100%);
   animation:fade 2.4s .2s ease both}
 .hero-art .sharp{
-  -webkit-mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%),linear-gradient(to bottom,#000 78%,transparent);
-  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%) intersect,linear-gradient(to bottom,#000 78%,transparent);
+  -webkit-mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
+  mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
   animation:develop 3.2s .4s var(--ease) both}
 /* only darken under the nav bar; a full vignette left a visible seam at the art's left edge */
-.hero-art::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(17,12,9,.7),transparent 14%)}
+.hero-art::after{content:"";position:absolute;inset:-8% -20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 55% 55%,rgba(194,74,44,.22),transparent 65%)}
 .plate-cap{position:absolute;z-index:1;right:clamp(1rem,4vw,3rem);bottom:2rem;font-style:italic;font-size:.92rem;
   color:var(--paper-dim);text-shadow:0 1px 10px #000;animation:rise 1s 1.4s var(--ease) both}
 .plate-cap span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;margin-right:.3rem}
@@ -834,7 +870,22 @@ img{display:block;max-width:100%}
 h1{font-family:"IM Fell English",serif;font-weight:400;line-height:.82;letter-spacing:-.035em;font-size:clamp(4.4rem,12.5vw,11rem)}
 h1 .w1{display:block;animation:rise 1.2s .2s var(--ease) both}
 h1 .w2{display:block;padding-left:.55em;color:var(--amber);
-  text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);animation:rise 1.2s .38s var(--ease) both}
+  text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);
+  animation:rise 1.2s .38s var(--ease) both,flame 7s 1.6s linear infinite}
+/* irregular stops so it gutters like a candle rather than pulsing like a screensaver */
+@keyframes flame{
+  0%,100%{color:#e08a32;text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25)}
+  9%{color:#e8923a;text-shadow:0 0 .42em rgba(240,150,60,.46),0 0 1.35em rgba(200,62,31,.31)}
+  13%{color:#db8530;text-shadow:0 0 .31em rgba(224,138,50,.3),0 0 1.1em rgba(184,50,31,.21)}
+  24%{color:#e48e36;text-shadow:0 0 .4em rgba(236,146,56,.42),0 0 1.3em rgba(196,58,31,.28)}
+  31%{color:#e08a32;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.18em rgba(184,50,31,.24)}
+  44%{color:#ea953c;text-shadow:0 0 .45em rgba(244,156,64,.5),0 0 1.42em rgba(204,64,31,.33)}
+  47%{color:#d98230;text-shadow:0 0 .3em rgba(220,132,48,.28),0 0 1.05em rgba(180,48,31,.2)}
+  52%{color:#e38d35;text-shadow:0 0 .38em rgba(232,142,54,.4),0 0 1.26em rgba(192,56,31,.27)}
+  68%{color:#df8932;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.2em rgba(184,50,31,.25)}
+  79%{color:#e7913a;text-shadow:0 0 .43em rgba(240,152,62,.47),0 0 1.38em rgba(200,62,31,.31)}
+  83%{color:#dc8631;text-shadow:0 0 .32em rgba(224,136,50,.31),0 0 1.12em rgba(184,50,31,.22)}
+}
 .deck{max-width:32rem;margin-top:2rem;font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--paper-2);animation:rise 1s .6s var(--ease) both}
 .deck em{color:var(--paper)}
 .contents{margin-top:2.6rem;max-width:26rem;animation:rise 1s .8s var(--ease) both}
@@ -1010,7 +1061,15 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .cat .moon{fill:#f3e9c6;filter:drop-shadow(0 0 8px rgba(243,233,198,.55))}
 .cat .spark{fill:#ece6ff;transform-box:fill-box;transform-origin:center;animation:sparkle 3.2s ease-in-out infinite}
 .cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite}
-.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:swish 4.5s ease-in-out infinite alternate}
+.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:sway 6.5s ease-in-out infinite}
+.cat .tail-tip{transform-box:view-box;transform-origin:167px 160px;animation:flick 8s ease-in-out infinite}
+.cat .pupils{transition:transform .35s cubic-bezier(.3,.7,.3,1);animation:glance 13s ease-in-out infinite}
+.gaze{position:absolute;z-index:3;top:-6rem;bottom:0;left:calc(50% - 50vw);width:100vw;
+  display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(6,1fr)}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes flick{0%,55%,100%{transform:rotate(0)}61%{transform:rotate(16deg)}67%{transform:rotate(-7deg)}73%{transform:rotate(9deg)}82%{transform:rotate(0)}}
+/* left alone, the cat glances about the room */
+@keyframes glance{0%,26%,100%{transform:none}31%,44%{transform:translate(-3.5px,.6px)}50%,62%{transform:translate(3.2px,-1.2px)}68%,80%{transform:translate(.4px,2.2px)}86%{transform:none}}
 @keyframes sparkle{0%,100%{opacity:.2;transform:scale(.55)}50%{opacity:1;transform:scale(1.1)}}
 @keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.06)}}
 @keyframes swish{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
@@ -1075,15 +1134,14 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @media (max-width:860px){
   /* phones: the painting becomes a cover that dissolves downwards into the title */
   .hero{display:block;padding:56svh 1.25rem 3rem}
-  .hero-art{width:100%;bottom:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
+  .hero-art{left:0;right:0;width:100%;bottom:auto;margin:0;aspect-ratio:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
   .hero-art img{object-position:50% 46%}
   .hero-art .haze{transform:scale(1.1);
     -webkit-mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent)}
   .hero-art .sharp{-webkit-mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);
     mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%)}
-  .hero-art::after{background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
+  .hero-art::after{inset:0;z-index:0;background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
   .hero h1{text-shadow:0 4px 30px rgba(17,12,9,.9)}
-  .hero h1 .w2{text-shadow:0 0 .35em rgba(224,138,50,.35),0 4px 30px rgba(17,12,9,.9)}
   .kicker{border-bottom-color:rgba(236,223,198,.22)}
   .plate-cap{display:none}
   .kicker{text-shadow:0 1px 12px rgba(17,12,9,.95)}

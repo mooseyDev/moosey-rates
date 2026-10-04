@@ -73,19 +73,22 @@ img{display:block;max-width:100%}
 
 /* The painting bleeds in from the right. Two copies: a blurred one that reaches further in,
    and a sharp one on top that fades out sooner, so it goes sharp -> haze -> nothing. */
-.hero-art{position:absolute;top:0;right:0;bottom:0;width:min(60%,calc(100% - max(clamp(1rem,6vw,6rem),calc((100vw - 1320px) / 2)) - 500px));animation:settle 9s var(--ease) both}
+/* shown whole at its own proportions, so it's never blown up past its pixels */
+.hero-art{position:absolute;top:0;bottom:0;margin:auto 0;right:clamp(0rem,6vw,9rem);height:min(96%,64rem);aspect-ratio:1024/1792;
+  animation:settle 9s var(--ease) both}
 .hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 52%}
-.hero-art .haze{filter:blur(26px) saturate(1.15) brightness(.75);opacity:.75;transform:scale(1.08);
-  -webkit-mask:linear-gradient(to right,transparent 0%,#000 24%),linear-gradient(to bottom,#000 70%,transparent);
-  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 0%,#000 24%) intersect,linear-gradient(to bottom,#000 70%,transparent);
+.hero-art .haze{filter:blur(30px) saturate(1.2) brightness(.8);opacity:.9;transform:scale(1.22);
+  /* closest-side: the fade must reach zero inside the box, or the box edge shows as a hard line */
+  -webkit-mask:radial-gradient(closest-side,#000 30%,transparent 100%);
+  mask:radial-gradient(closest-side,#000 30%,transparent 100%);
   animation:fade 2.4s .2s ease both}
 .hero-art .sharp{
-  -webkit-mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%),linear-gradient(to bottom,#000 78%,transparent);
-  -webkit-mask-composite:source-in;mask:linear-gradient(to right,transparent 5%,rgba(0,0,0,.5) 16%,#000 30%) intersect,linear-gradient(to bottom,#000 78%,transparent);
+  -webkit-mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
+  mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
   animation:develop 3.2s .4s var(--ease) both}
 /* only darken under the nav bar; a full vignette left a visible seam at the art's left edge */
-.hero-art::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(17,12,9,.7),transparent 14%)}
+.hero-art::after{content:"";position:absolute;inset:-8% -20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 55% 55%,rgba(194,74,44,.22),transparent 65%)}
 .plate-cap{position:absolute;z-index:1;right:clamp(1rem,4vw,3rem);bottom:2rem;font-style:italic;font-size:.92rem;
   color:var(--paper-dim);text-shadow:0 1px 10px #000;animation:rise 1s 1.4s var(--ease) both}
 .plate-cap span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;margin-right:.3rem}
@@ -98,7 +101,22 @@ img{display:block;max-width:100%}
 h1{font-family:"IM Fell English",serif;font-weight:400;line-height:.82;letter-spacing:-.035em;font-size:clamp(4.4rem,12.5vw,11rem)}
 h1 .w1{display:block;animation:rise 1.2s .2s var(--ease) both}
 h1 .w2{display:block;padding-left:.55em;color:var(--amber);
-  text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);animation:rise 1.2s .38s var(--ease) both}
+  text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);
+  animation:rise 1.2s .38s var(--ease) both,flame 7s 1.6s linear infinite}
+/* irregular stops so it gutters like a candle rather than pulsing like a screensaver */
+@keyframes flame{
+  0%,100%{color:#e08a32;text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25)}
+  9%{color:#e8923a;text-shadow:0 0 .42em rgba(240,150,60,.46),0 0 1.35em rgba(200,62,31,.31)}
+  13%{color:#db8530;text-shadow:0 0 .31em rgba(224,138,50,.3),0 0 1.1em rgba(184,50,31,.21)}
+  24%{color:#e48e36;text-shadow:0 0 .4em rgba(236,146,56,.42),0 0 1.3em rgba(196,58,31,.28)}
+  31%{color:#e08a32;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.18em rgba(184,50,31,.24)}
+  44%{color:#ea953c;text-shadow:0 0 .45em rgba(244,156,64,.5),0 0 1.42em rgba(204,64,31,.33)}
+  47%{color:#d98230;text-shadow:0 0 .3em rgba(220,132,48,.28),0 0 1.05em rgba(180,48,31,.2)}
+  52%{color:#e38d35;text-shadow:0 0 .38em rgba(232,142,54,.4),0 0 1.26em rgba(192,56,31,.27)}
+  68%{color:#df8932;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.2em rgba(184,50,31,.25)}
+  79%{color:#e7913a;text-shadow:0 0 .43em rgba(240,152,62,.47),0 0 1.38em rgba(200,62,31,.31)}
+  83%{color:#dc8631;text-shadow:0 0 .32em rgba(224,136,50,.31),0 0 1.12em rgba(184,50,31,.22)}
+}
 .deck{max-width:32rem;margin-top:2rem;font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--paper-2);animation:rise 1s .6s var(--ease) both}
 .deck em{color:var(--paper)}
 .contents{margin-top:2.6rem;max-width:26rem;animation:rise 1s .8s var(--ease) both}
@@ -274,7 +292,15 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .cat .moon{fill:#f3e9c6;filter:drop-shadow(0 0 8px rgba(243,233,198,.55))}
 .cat .spark{fill:#ece6ff;transform-box:fill-box;transform-origin:center;animation:sparkle 3.2s ease-in-out infinite}
 .cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite}
-.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:swish 4.5s ease-in-out infinite alternate}
+.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:sway 6.5s ease-in-out infinite}
+.cat .tail-tip{transform-box:view-box;transform-origin:167px 160px;animation:flick 8s ease-in-out infinite}
+.cat .pupils{transition:transform .35s cubic-bezier(.3,.7,.3,1);animation:glance 13s ease-in-out infinite}
+.gaze{position:absolute;z-index:3;top:-6rem;bottom:0;left:calc(50% - 50vw);width:100vw;
+  display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(6,1fr)}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes flick{0%,55%,100%{transform:rotate(0)}61%{transform:rotate(16deg)}67%{transform:rotate(-7deg)}73%{transform:rotate(9deg)}82%{transform:rotate(0)}}
+/* left alone, the cat glances about the room */
+@keyframes glance{0%,26%,100%{transform:none}31%,44%{transform:translate(-3.5px,.6px)}50%,62%{transform:translate(3.2px,-1.2px)}68%,80%{transform:translate(.4px,2.2px)}86%{transform:none}}
 @keyframes sparkle{0%,100%{opacity:.2;transform:scale(.55)}50%{opacity:1;transform:scale(1.1)}}
 @keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.06)}}
 @keyframes swish{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
@@ -339,15 +365,14 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @media (max-width:860px){
   /* phones: the painting becomes a cover that dissolves downwards into the title */
   .hero{display:block;padding:56svh 1.25rem 3rem}
-  .hero-art{width:100%;bottom:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
+  .hero-art{left:0;right:0;width:100%;bottom:auto;margin:0;aspect-ratio:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
   .hero-art img{object-position:50% 46%}
   .hero-art .haze{transform:scale(1.1);
     -webkit-mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent)}
   .hero-art .sharp{-webkit-mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);
     mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%)}
-  .hero-art::after{background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
+  .hero-art::after{inset:0;z-index:0;background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
   .hero h1{text-shadow:0 4px 30px rgba(17,12,9,.9)}
-  .hero h1 .w2{text-shadow:0 0 .35em rgba(224,138,50,.35),0 4px 30px rgba(17,12,9,.9)}
   .kicker{border-bottom-color:rgba(236,223,198,.22)}
   .plate-cap{display:none}
   .kicker{text-shadow:0 1px 12px rgba(17,12,9,.95)}
@@ -373,6 +398,91 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition-duration:.01s!important;scroll-behavior:auto!important}
 }
+.guest-wrap:has(.gaze i:nth-child(1):hover) .pupils{animation:none;transform:translate(-3.92px,-0.50px)}
+.guest-wrap:has(.gaze i:nth-child(2):hover) .pupils{animation:none;transform:translate(-3.89px,-0.61px)}
+.guest-wrap:has(.gaze i:nth-child(3):hover) .pupils{animation:none;transform:translate(-3.82px,-0.77px)}
+.guest-wrap:has(.gaze i:nth-child(4):hover) .pupils{animation:none;transform:translate(-3.67px,-1.03px)}
+.guest-wrap:has(.gaze i:nth-child(5):hover) .pupils{animation:none;transform:translate(-3.24px,-1.52px)}
+.guest-wrap:has(.gaze i:nth-child(6):hover) .pupils{animation:none;transform:translate(-1.09px,-1.54px)}
+.guest-wrap:has(.gaze i:nth-child(7):hover) .pupils{animation:none;transform:translate(1.09px,-1.54px)}
+.guest-wrap:has(.gaze i:nth-child(8):hover) .pupils{animation:none;transform:translate(3.24px,-1.52px)}
+.guest-wrap:has(.gaze i:nth-child(9):hover) .pupils{animation:none;transform:translate(3.67px,-1.03px)}
+.guest-wrap:has(.gaze i:nth-child(10):hover) .pupils{animation:none;transform:translate(3.82px,-0.77px)}
+.guest-wrap:has(.gaze i:nth-child(11):hover) .pupils{animation:none;transform:translate(3.89px,-0.61px)}
+.guest-wrap:has(.gaze i:nth-child(12):hover) .pupils{animation:none;transform:translate(3.92px,-0.50px)}
+.guest-wrap:has(.gaze i:nth-child(13):hover) .pupils{animation:none;transform:translate(-4.00px,-0.08px)}
+.guest-wrap:has(.gaze i:nth-child(14):hover) .pupils{animation:none;transform:translate(-4.00px,-0.10px)}
+.guest-wrap:has(.gaze i:nth-child(15):hover) .pupils{animation:none;transform:translate(-4.00px,-0.12px)}
+.guest-wrap:has(.gaze i:nth-child(16):hover) .pupils{animation:none;transform:translate(-3.99px,-0.17px)}
+.guest-wrap:has(.gaze i:nth-child(17):hover) .pupils{animation:none;transform:translate(-3.27px,-0.24px)}
+.guest-wrap:has(.gaze i:nth-child(18):hover) .pupils{animation:none;transform:translate(-1.09px,-0.24px)}
+.guest-wrap:has(.gaze i:nth-child(19):hover) .pupils{animation:none;transform:translate(1.09px,-0.24px)}
+.guest-wrap:has(.gaze i:nth-child(20):hover) .pupils{animation:none;transform:translate(3.27px,-0.24px)}
+.guest-wrap:has(.gaze i:nth-child(21):hover) .pupils{animation:none;transform:translate(3.99px,-0.17px)}
+.guest-wrap:has(.gaze i:nth-child(22):hover) .pupils{animation:none;transform:translate(4.00px,-0.12px)}
+.guest-wrap:has(.gaze i:nth-child(23):hover) .pupils{animation:none;transform:translate(4.00px,-0.10px)}
+.guest-wrap:has(.gaze i:nth-child(24):hover) .pupils{animation:none;transform:translate(4.00px,-0.08px)}
+.guest-wrap:has(.gaze i:nth-child(25):hover) .pupils{animation:none;transform:translate(-3.96px,0.35px)}
+.guest-wrap:has(.gaze i:nth-child(26):hover) .pupils{animation:none;transform:translate(-3.95px,0.43px)}
+.guest-wrap:has(.gaze i:nth-child(27):hover) .pupils{animation:none;transform:translate(-3.91px,0.54px)}
+.guest-wrap:has(.gaze i:nth-child(28):hover) .pupils{animation:none;transform:translate(-3.83px,0.75px)}
+.guest-wrap:has(.gaze i:nth-child(29):hover) .pupils{animation:none;transform:translate(-3.27px,1.06px)}
+.guest-wrap:has(.gaze i:nth-child(30):hover) .pupils{animation:none;transform:translate(-1.09px,1.06px)}
+.guest-wrap:has(.gaze i:nth-child(31):hover) .pupils{animation:none;transform:translate(1.09px,1.06px)}
+.guest-wrap:has(.gaze i:nth-child(32):hover) .pupils{animation:none;transform:translate(3.27px,1.06px)}
+.guest-wrap:has(.gaze i:nth-child(33):hover) .pupils{animation:none;transform:translate(3.83px,0.75px)}
+.guest-wrap:has(.gaze i:nth-child(34):hover) .pupils{animation:none;transform:translate(3.91px,0.54px)}
+.guest-wrap:has(.gaze i:nth-child(35):hover) .pupils{animation:none;transform:translate(3.95px,0.43px)}
+.guest-wrap:has(.gaze i:nth-child(36):hover) .pupils{animation:none;transform:translate(3.96px,0.35px)}
+.guest-wrap:has(.gaze i:nth-child(37):hover) .pupils{animation:none;transform:translate(-3.83px,0.75px)}
+.guest-wrap:has(.gaze i:nth-child(38):hover) .pupils{animation:none;transform:translate(-3.75px,0.90px)}
+.guest-wrap:has(.gaze i:nth-child(39):hover) .pupils{animation:none;transform:translate(-3.61px,1.12px)}
+.guest-wrap:has(.gaze i:nth-child(40):hover) .pupils{animation:none;transform:translate(-3.33px,1.44px)}
+.guest-wrap:has(.gaze i:nth-child(41):hover) .pupils{animation:none;transform:translate(-2.68px,1.93px)}
+.guest-wrap:has(.gaze i:nth-child(42):hover) .pupils{animation:none;transform:translate(-1.09px,2.36px)}
+.guest-wrap:has(.gaze i:nth-child(43):hover) .pupils{animation:none;transform:translate(1.09px,2.36px)}
+.guest-wrap:has(.gaze i:nth-child(44):hover) .pupils{animation:none;transform:translate(2.68px,1.93px)}
+.guest-wrap:has(.gaze i:nth-child(45):hover) .pupils{animation:none;transform:translate(3.33px,1.44px)}
+.guest-wrap:has(.gaze i:nth-child(46):hover) .pupils{animation:none;transform:translate(3.61px,1.12px)}
+.guest-wrap:has(.gaze i:nth-child(47):hover) .pupils{animation:none;transform:translate(3.75px,0.90px)}
+.guest-wrap:has(.gaze i:nth-child(48):hover) .pupils{animation:none;transform:translate(3.83px,0.75px)}
+.guest-wrap:has(.gaze i:nth-child(49):hover) .pupils{animation:none;transform:translate(-3.62px,1.11px)}
+.guest-wrap:has(.gaze i:nth-child(50):hover) .pupils{animation:none;transform:translate(-3.47px,1.29px)}
+.guest-wrap:has(.gaze i:nth-child(51):hover) .pupils{animation:none;transform:translate(-3.22px,1.54px)}
+.guest-wrap:has(.gaze i:nth-child(52):hover) .pupils{animation:none;transform:translate(-2.78px,1.87px)}
+.guest-wrap:has(.gaze i:nth-child(53):hover) .pupils{animation:none;transform:translate(-2.01px,2.25px)}
+.guest-wrap:has(.gaze i:nth-child(54):hover) .pupils{animation:none;transform:translate(-0.76px,2.55px)}
+.guest-wrap:has(.gaze i:nth-child(55):hover) .pupils{animation:none;transform:translate(0.76px,2.55px)}
+.guest-wrap:has(.gaze i:nth-child(56):hover) .pupils{animation:none;transform:translate(2.01px,2.25px)}
+.guest-wrap:has(.gaze i:nth-child(57):hover) .pupils{animation:none;transform:translate(2.78px,1.87px)}
+.guest-wrap:has(.gaze i:nth-child(58):hover) .pupils{animation:none;transform:translate(3.22px,1.54px)}
+.guest-wrap:has(.gaze i:nth-child(59):hover) .pupils{animation:none;transform:translate(3.47px,1.29px)}
+.guest-wrap:has(.gaze i:nth-child(60):hover) .pupils{animation:none;transform:translate(3.62px,1.11px)}
+.guest-wrap:has(.gaze i:nth-child(61):hover) .pupils{animation:none;transform:translate(-3.37px,1.40px)}
+.guest-wrap:has(.gaze i:nth-child(62):hover) .pupils{animation:none;transform:translate(-3.16px,1.60px)}
+.guest-wrap:has(.gaze i:nth-child(63):hover) .pupils{animation:none;transform:translate(-2.83px,1.84px)}
+.guest-wrap:has(.gaze i:nth-child(64):hover) .pupils{animation:none;transform:translate(-2.32px,2.12px)}
+.guest-wrap:has(.gaze i:nth-child(65):hover) .pupils{animation:none;transform:translate(-1.58px,2.39px)}
+.guest-wrap:has(.gaze i:nth-child(66):hover) .pupils{animation:none;transform:translate(-0.57px,2.57px)}
+.guest-wrap:has(.gaze i:nth-child(67):hover) .pupils{animation:none;transform:translate(0.57px,2.57px)}
+.guest-wrap:has(.gaze i:nth-child(68):hover) .pupils{animation:none;transform:translate(1.58px,2.39px)}
+.guest-wrap:has(.gaze i:nth-child(69):hover) .pupils{animation:none;transform:translate(2.32px,2.12px)}
+.guest-wrap:has(.gaze i:nth-child(70):hover) .pupils{animation:none;transform:translate(2.83px,1.84px)}
+.guest-wrap:has(.gaze i:nth-child(71):hover) .pupils{animation:none;transform:translate(3.16px,1.60px)}
+.guest-wrap:has(.gaze i:nth-child(72):hover) .pupils{animation:none;transform:translate(3.37px,1.40px)}
+@media (min-width:1101px){
+.guest-wrap:has(.grid .card:nth-child(1):hover) .pupils{animation:none;transform:translate(-2.47px,2.04px)}
+.guest-wrap:has(.grid .card:nth-child(2):hover) .pupils{animation:none;transform:translate(-1.47px,2.42px)}
+.guest-wrap:has(.grid .card:nth-child(3):hover) .pupils{animation:none;transform:translate(0.00px,2.60px)}
+.guest-wrap:has(.grid .card:nth-child(4):hover) .pupils{animation:none;transform:translate(1.47px,2.42px)}
+.guest-wrap:has(.grid .card:nth-child(5):hover) .pupils{animation:none;transform:translate(2.47px,2.04px)}
+.guest-wrap:has(.grid .card:nth-child(6):hover) .pupils{animation:none;transform:translate(-1.69px,2.36px)}
+.guest-wrap:has(.grid .card:nth-child(7):hover) .pupils{animation:none;transform:translate(-0.91px,2.53px)}
+.guest-wrap:has(.grid .card:nth-child(8):hover) .pupils{animation:none;transform:translate(0.00px,2.60px)}
+.guest-wrap:has(.grid .card:nth-child(9):hover) .pupils{animation:none;transform:translate(0.91px,2.53px)}
+.guest-wrap:has(.grid .card:nth-child(10):hover) .pupils{animation:none;transform:translate(1.69px,2.36px)}
+}
+.guest-wrap:has(.mentions:hover) .pupils{animation:none;transform:translate(0px,2.6px)}
 </style>
 </head>
 <body>
@@ -385,7 +495,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 <header class="hero" id="top">
   <div class="hero-art">
     <img class="haze" src="art/moose-ship.jpg" alt="" aria-hidden="true">
-    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1100" height="1925">
+    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1024" height="1792">
   </div>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
@@ -485,6 +595,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 <main>
   <section class="chapter" id="music">
     <header class="sec-head" data-num="I">
+      
       
       <p class="eyebrow">Chapter I</p>
       <h2>Music</h2>
@@ -608,6 +719,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   <section class="chapter" id="film">
     <header class="sec-head" data-num="II">
       
+      
       <p class="eyebrow">Chapter II</p>
       <h2>Film</h2>
       <p class="sec-deck">Ten films worth the popcorn, the overpriced seat and the bloke on his phone in row F.</p>
@@ -730,6 +842,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   <section class="chapter" id="series">
     <header class="sec-head" data-num="III">
       
+      
       <p class="eyebrow">Chapter III</p>
       <h2>Series</h2>
       <p class="sec-deck">Ten reasons I have never once gone to bed at a sensible hour.</p>
@@ -851,6 +964,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   </section>
   <section class="chapter" id="games">
     <header class="sec-head" data-num="IV">
+      
       
       <p class="eyebrow">Chapter IV</p>
       <h2>Games</h2>
@@ -977,13 +1091,14 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
         <defs>
           <radialGradient id="halo"><stop offset="0" stop-color="#8f7cf0" stop-opacity=".42"/><stop offset="1" stop-color="#8f7cf0" stop-opacity="0"/></radialGradient>
           <radialGradient id="iris" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#ffe08a"/><stop offset=".65" stop-color="#f2a93b"/><stop offset="1" stop-color="#b8661e"/></radialGradient>
+          <clipPath id="irises"><ellipse cx="84" cy="97" rx="10" ry="11"/><ellipse cx="116" cy="97" rx="10" ry="11"/></clipPath>
           <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#c9bcff" flood-opacity=".55"/></filter>
         </defs>
         <circle cx="100" cy="120" r="95" fill="url(#halo)"/>
         <path class="moon" d="M160,22 a18,18 0 1,0 18,26 a14,14 0 1,1 -18,-26Z"/>
         <path class="spark" style="animation-delay:0s" d="M30,40 Q30,46 36,46 Q30,46 30,52 Q30,46 24,46 Q30,46 30,40Z"/><path class="spark" style="animation-delay:1.3s" d="M176,87.5 Q176,92 180.5,92 Q176,92 176,96.5 Q176,92 171.5,92 Q176,92 176,87.5Z"/><path class="spark" style="animation-delay:2.1s" d="M22,146 Q22,150 26,150 Q22,150 22,154 Q22,150 18,150 Q22,150 22,146Z"/><path class="spark" style="animation-delay:0.7s" d="M60,16.5 Q60,20 63.5,20 Q60,20 60,23.5 Q60,20 56.5,20 Q60,20 60,16.5Z"/>
         <g filter="url(#rim)" fill="#17131f">
-          <g class="tail"><circle cx="140.0" cy="196.0" r="13.0"/><circle cx="144.5" cy="191.4" r="14.9"/><circle cx="148.9" cy="186.8" r="12.3"/><circle cx="153.1" cy="182.4" r="14.2"/><circle cx="156.8" cy="178.0" r="11.7"/><circle cx="160.2" cy="173.8" r="13.5"/><circle cx="163.0" cy="169.6" r="11.0"/><circle cx="165.1" cy="165.5" r="12.9"/><circle cx="166.6" cy="161.5" r="10.3"/><circle cx="167.3" cy="157.6" r="12.2"/><circle cx="167.3" cy="153.8" r="9.7"/><circle cx="166.5" cy="150.0" r="11.5"/><circle cx="165.0" cy="146.4" r="9.0"/><circle cx="162.7" cy="142.8" r="10.9"/><circle cx="159.8" cy="139.4" r="8.3"/><circle cx="156.3" cy="136.0" r="10.2"/><path d="M170.0,119.2 Q174.3,118.7 174.7,123.3 Q178.2,126.0 175.8,129.7 Q177.5,133.9 172.7,135.1 Q170.2,139.1 166.4,137.4 Q162.1,138.8 160.2,135.0 Q155.7,134.1 157.2,129.9 Q155.0,125.9 158.2,123.6 Q158.7,119.1 162.9,119.2 Q166.6,115.9 170.0,119.2Z"/></g>
+          <g class="tail"><circle cx="140.0" cy="196.0" r="13.0"/><circle cx="144.5" cy="191.4" r="14.9"/><circle cx="148.9" cy="186.8" r="12.3"/><circle cx="153.1" cy="182.4" r="14.2"/><circle cx="156.8" cy="178.0" r="11.7"/><circle cx="160.2" cy="173.8" r="13.5"/><circle cx="163.0" cy="169.6" r="11.0"/><circle cx="165.1" cy="165.5" r="12.9"/><circle cx="166.6" cy="161.5" r="10.3"/><g class="tail-tip"><circle cx="167.3" cy="157.6" r="12.2"/><circle cx="167.3" cy="153.8" r="9.7"/><circle cx="166.5" cy="150.0" r="11.5"/><circle cx="165.0" cy="146.4" r="9.0"/><circle cx="162.7" cy="142.8" r="10.9"/><circle cx="159.8" cy="139.4" r="8.3"/><circle cx="156.3" cy="136.0" r="10.2"/><path d="M170.0,119.2 Q174.3,118.7 174.7,123.3 Q178.2,126.0 175.8,129.7 Q177.5,133.9 172.7,135.1 Q170.2,139.1 166.4,137.4 Q162.1,138.8 160.2,135.0 Q155.7,134.1 157.2,129.9 Q155.0,125.9 158.2,123.6 Q158.7,119.1 162.9,119.2 Q166.6,115.9 170.0,119.2Z"/></g></g>
           <path d="M105.0,125.3 Q112.5,121.4 114.5,127.3 Q124.0,127.0 124.8,132.1 Q134.3,133.8 133.6,139.4 Q141.8,140.3 140.0,148.4 Q146.4,151.7 144.0,158.9 Q149.9,163.1 145.0,168.6 Q148.8,174.6 143.5,178.6 Q147.4,183.3 139.1,189.0 Q141.3,196.3 132.6,197.3 Q133.2,206.3 125.6,202.9 Q124.8,212.6 114.3,208.3 Q114.5,217.3 106.6,210.0 Q98.1,217.3 94.9,210.2 Q88.2,217.1 84.2,207.8 Q76.6,212.0 74.4,202.9 Q64.5,203.9 66.1,195.9 Q56.4,195.0 59.5,186.4 Q53.0,186.5 56.1,177.1 Q49.1,172.3 55.0,167.8 Q49.7,163.3 56.6,156.6 Q52.7,151.7 59.5,149.4 Q59.3,138.8 65.4,140.6 Q66.1,131.9 73.4,133.3 Q77.8,125.4 85.3,127.3 Q88.7,122.2 93.0,125.5 Q100.2,120.6 105.0,125.3Z"/><path d="M105.7,115.3 Q113.6,112.8 118.1,120.3 Q126.1,120.7 126.3,129.2 Q132.7,132.4 129.1,139.8 Q133.1,146.4 126.0,151.3 Q126.2,157.4 118.8,159.2 Q113.5,166.7 106.3,164.6 Q100.3,169.5 93.0,164.5 Q86.2,165.9 81.5,159.5 Q73.5,158.5 74.2,151.7 Q67.8,147.0 70.9,140.4 Q66.5,134.1 74.2,128.4 Q72.5,122.3 81.6,120.4 Q84.3,114.3 93.4,115.4 Q99.7,110.9 105.7,115.3Z"/>
           <ellipse cx="84" cy="206" rx="13" ry="9"/><ellipse cx="116" cy="206" rx="13" ry="9"/>
           <path d="M60,86 L68,48 Q72,41 78,46 L98,66Z"/><path d="M140,86 L132,48 Q128,41 122,46 L102,66Z"/>
@@ -997,7 +1112,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
         </g>
         <g class="eyes">
           <ellipse cx="84" cy="97" rx="10" ry="11" fill="url(#iris)"/><ellipse cx="116" cy="97" rx="10" ry="11" fill="url(#iris)"/>
-          <ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/>
+          <g clip-path="url(#irises)"><g class="pupils"><ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/></g></g>
           <circle cx="80.5" cy="92.5" r="2.6" fill="#fff"/><circle cx="112.5" cy="92.5" r="2.6" fill="#fff"/>
           <circle cx="88" cy="103" r="1.1" fill="#fff" opacity=".8"/><circle cx="120" cy="103" r="1.1" fill="#fff" opacity=".8"/>
         </g>
@@ -1007,6 +1122,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
         <path d="M93,127 q7,5 14,0" fill="none" stroke="#c9a54a" stroke-width="1.2"/>
         <path d="M100,129 a5,5 0 1,0 4,7 a4,4 0 1,1 -4,-7Z" fill="#e8c35a"/>
       </svg>
+      <div class="gaze" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <p class="eyebrow">Chapter V · A guest column</p>
       <h2>Books</h2>
       <p class="sec-deck">Ten books, reviewed by the Long-Haired Black Cat, who sat on every one of them while they were being read. Moosey was not consulted.</p>
