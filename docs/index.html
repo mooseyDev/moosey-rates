@@ -71,6 +71,7 @@ img{display:block;max-width:100%}
   min-height:100svh;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,5rem);
   align-items:center;padding:7rem clamp(1rem,6vw,6rem) 4rem;max-width:1440px;margin:0 auto;
 }
+.hero-art{display:none}  /* the dissolving cover is a phone-only layout; desktop keeps the framed plate */
 .plate{justify-self:center;width:min(100%,430px);animation:rise 1.4s .3s var(--ease) both}
 .frame{position:relative;padding:12px;border:1px solid rgba(236,223,198,.28);background:rgba(236,223,198,.03);
   box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 120px -30px rgba(194,74,44,.45)}
@@ -365,6 +366,9 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @keyframes drop{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
 /* the plate "develops" like a print in the tray */
 @keyframes develop{from{filter:sepia(1) contrast(.6) brightness(1.5) blur(6px);opacity:.2}to{filter:none;opacity:1}}
+@keyframes settle{from{transform:scale(1.06)}to{transform:none}}
+@keyframes fade{from{opacity:0}}
+@keyframes breathe{from{transform:none}to{transform:scale(1.05) translateY(-1%)}}
 @keyframes drift{from{transform:scale(1.05) translate3d(-1.5%,0,0)}to{transform:scale(1.14) translate3d(1.5%,-3%,0)}}
 @keyframes appear{from{opacity:0;transform:translateY(46px) scale(.97)}to{opacity:1;transform:none}}
 
@@ -382,9 +386,21 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .nuggets ul{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr;padding-top:6rem}
-  .plate{width:min(72%,340px)}
-  .frame img{max-height:60svh}
+  /* phones: the painting becomes a cover that dissolves downwards into the title */
+  .plate{display:none}
+  .hero{display:block;position:relative;overflow:clip;max-width:none;padding:56svh 1.25rem 3rem}
+  .hero-text{position:relative;z-index:1}
+  .hero-art{display:block;position:absolute;top:0;left:0;right:0;height:82svh;
+    animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
+  .hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 46%}
+  .hero-art .haze{filter:blur(26px) saturate(1.15) brightness(.75);opacity:.75;transform:scale(1.1);
+    -webkit-mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);
+    mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);animation:fade 2.4s .2s ease both}
+  .hero-art .sharp{-webkit-mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);
+    mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);animation:develop 3.2s .4s var(--ease) both}
+  .hero-art::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
+  .hero h1{text-shadow:0 4px 30px rgba(17,12,9,.9)}
+  .kicker{text-shadow:0 1px 12px rgba(17,12,9,.95);border-bottom-color:rgba(236,223,198,.22)}
   .kicker span:nth-child(3){display:none}
   .memoriam{grid-template-columns:1fr;justify-items:center;text-align:center}
   .grid{grid-template-columns:repeat(3,1fr)}
@@ -404,8 +420,13 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .guest .eyebrow::before,.guest .eyebrow::after{display:none}
 }
 @media (hover:none){ .card{cursor:pointer} }
+/* Reduce Motion is for vestibular triggers: big slides, zooms, parallax. Those stop.
+   Small, contained life (flicker, blink, tail, embers, ticking) is left running. */
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition-duration:.01s!important;scroll-behavior:auto!important}
+  html{scroll-behavior:auto}
+  .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets,.memoriam,
+  .interlude-art,.hero-art,.plate,.kicker,h1 .w1,.deck,.contents,.bar{animation:none!important}
+  h1 .w2{animation:burn 3.7s infinite!important}
 }
 .guest-wrap:has(.gaze i:nth-child(1):hover) .pupils{animation:none;transform:translate(-3.92px,-0.50px)}
 .guest-wrap:has(.gaze i:nth-child(2):hover) .pupils{animation:none;transform:translate(-3.89px,-0.61px)}
@@ -502,6 +523,10 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 </nav>
 
 <header class="hero" id="top">
+  <div class="hero-art" aria-hidden="true">
+    <img class="haze" src="art/moose-ship.jpg" alt="">
+    <img class="sharp" src="art/moose-ship.jpg" alt="">
+  </div>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
     <h1><span class="w1">Moosey</span><em class="w2" data-text="Rates">Rates</em></h1>
