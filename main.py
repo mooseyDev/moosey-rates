@@ -8,6 +8,8 @@ To add or change a review, edit the data below and run it again.
 """
 
 import html
+import math
+import random
 import io
 import json
 import subprocess
@@ -59,7 +61,7 @@ CATEGORIES = [
             item("…Like Clockwork", "Queens of the Stone Age", "2013", 9.1,
                  "Josh Homme nearly died on an operating table and came back with this, which seems a fair trade. "
                  "Wounded, swaggering, and far sexier than desert rock has any right to be.",
-                 "itunes:Like Clockwork Queens of the Stone Age"),
+                 "wiki:...Like_Clockwork"),
             item("CRAWLER", "IDLES", "2021", 9.0,
                  "IDLES stop shouting long enough to say something devastating, then go back to shouting. "
                  "A car crash of an album, literally and as a compliment.",
@@ -268,31 +270,67 @@ CATEGORIES = [
     ),
 ]
 
-CHARACTERS = dict(
-    key="characters", num="V", name="Characters", aspect="3 / 4",
-    deck="Five people who don't exist and whom I'd follow into a war anyway.",
+# The guest chapter. No scores: the cat does not deal in numbers, only in approval.
+CATEGORIES.append(dict(
+    key="books", num="V", name="Books", aspect="2 / 3", guest=True,
+    deck="Ten books, reviewed by the Long-Haired Black Cat, who sat on every one of them "
+         "while they were being read. Moosey was not consulted.",
+    mentions_label="Worthy mentions",
     items=[
-        item("Ragnar Volarus", "Red Rising", "", None,
-             "Seven-odd feet of Obsidian warrior with the soul of a poet. "
-             "Every chapter he's in is a better chapter. Hail Reaper, but hail Ragnar louder.",
-             "mw:https://redrising.fandom.com/api.php|Ragnar Volarus"),
-        item("Ragnar Lothbrok", "Vikings", "", None,
-             "Farmer, raider, king, and chaos gremlin with a smirk. "
-             "The head tilt alone is a masterclass in acting.",
-             "mw:https://vikings.fandom.com/api.php|Ragnar"),
-        item("Dame Aylin", "Baldur's Gate 3", "", None,
-             "Daughter of the moon, locked up for a century, comes out swinging. "
-             "Pure knight-errant energy. Isobel, you lucky thing.",
-             "mw:https://bg3.wiki/w/api.php|Aylin"),
-        item("Solid Snake", "Metal Gear", "", None,
-             "Bandana, cardboard box, a voice like a gravel driveway. "
-             "The original tactical espionage action hero. Kept you waiting, huh?",
-             "wiki:Solid_Snake"),
-        item("The Tarnished", "Elden Ring", "", None,
-             "Silent, maidenless, endlessly dying and endlessly getting back up. "
-             "The most honest self-insert in gaming.",
-             "steam:1245620#library_hero@720,0,1185,620"),
+        item("The Secret History", "Donna Tartt", "1992", None,
+             "Rich students, Greek verbs, and a murder in the snow. Everyone is terrible and beautifully dressed. "
+             "Read it in one night on the warm bit of the radiator.",
+             "wiki:The_Secret_History"),
+        item("The Book Thief", "Markus Zusak", "2005", None,
+             "Narrated by Death, who is kinder than you'd think and nearly as patient as a cat. "
+             "I wept into my own fur. Do not tell the dog.",
+             "wiki:The_Book_Thief"),
+        item("Nineteen Eighty-Four", "George Orwell", "1949", None,
+             "Big Brother is watching you. I have always been watching you. "
+             "The difference is that I'm adorable about it.",
+             "wiki:Nineteen_Eighty-Four"),
+        item("To Kill a Mockingbird", "Harper Lee", "1960", None,
+             "Scout is the finest human kitten in literature, and Atticus would give up the good chair for a cat. "
+             "Quietly, devastatingly decent.",
+             "wiki:To_Kill_a_Mockingbird"),
+        item("The Hobbit", "J. R. R. Tolkien", "1937", None,
+             "A small creature who adores second breakfast and hates leaving the house. Relatable. "
+             "The dragon asleep on a pile of treasure is also, frankly, me.",
+             "wiki:The_Hobbit"),
+        item("The Handmaid's Tale", "Margaret Atwood", "1985", None,
+             "Every sentence has its claws out. Afterwards I sat very still on the windowsill for an hour, "
+             "which, admittedly, I do anyway.",
+             "wiki:The_Handmaid's_Tale"),
+        item("The Picture of Dorian Gray", "Oscar Wilde", "1890", None,
+             "A beautiful creature who never ages and never faces consequences. I fail to see the tragedy. "
+             "Wicked, witty, and gorgeous on every page.",
+             "wiki:The_Picture_of_Dorian_Gray"),
+        item("The Bell Jar", "Sylvia Plath", "1963", None,
+             "Sharp, lonely and luminous, like a cold moon through a window. "
+             "Not a cosy read. The true ones rarely are.",
+             "wiki:The_Bell_Jar"),
+        item("Piranesi", "Susanna Clarke", "2020", None,
+             "An endless house of statues and tides, kept by a gentle soul who talks to birds. "
+             "This is what I dream about when my paws twitch.",
+             "wiki:Piranesi_(novel)"),
+        item("The Color Purple", "Alice Walker", "1982", None,
+             "Letters to God, sisterhood, and a slow, hard-won joy. "
+             "Celie deserves every good thing, and a sunny spot to lie in.",
+             "wiki:The_Color_Purple"),
     ],
+    mentions=[
+        ("Of Mice and Men", "Short, sad, and there's a rabbit situation. I had feelings."),
+        ("The Fellowship of the Ring", "Nine walkers. Not one cat. Points deducted."),
+        ("The Song of Achilles", "Achilles is basically a cat: gorgeous, sulky, fast. Patroclus is a saint."),
+        ("The Subtle Knife", "A knife that cuts windows between worlds. I'd use it on the fridge."),
+    ],
+))
+
+MEMORIAL = item(
+    "Ragnar Volarus", "Obsidian, of the Valkyrie Spires", "", None,
+    "Raised to be a weapon, chose to be a poet. The gentlest giant in fiction "
+    "and the best friend a Reaper ever had.",
+    "mw:https://redrising.fandom.com/api.php|Ragnar Volarus",
 )
 
 # Picked by hand across categories, so they're references into the lists above.
@@ -309,7 +347,7 @@ NUGGETS = [
          "The good seasons. Before the saga got soggy.", "tvmaze:Vikings"),
     item("…Like Clockwork", "Queens of the Stone Age", "", None,
          "Already in the ten. Mentioned twice because it earned it.",
-         "itunes:Like Clockwork Queens of the Stone Age"),
+         "wiki:...Like_Clockwork"),
     item("Maggot Brain", "Funkadelic", "", None,
          "Ten minutes of Eddie Hazel's guitar weeping. You will too.", "wiki:Maggot_Brain"),
     item("Morning Star", "Pierce Brown, a book", "", None,
@@ -394,7 +432,7 @@ def save_jpeg(img, path, max_side):
 def all_items():
     for c in CATEGORIES:
         yield from c["items"]
-    yield from CHARACTERS["items"]
+    yield MEMORIAL
     yield from NUGGETS
 
 
@@ -417,6 +455,10 @@ def fetch_art():
             print(f"  fetched  {it['title']}")
         except Exception as e:  # one missing cover shouldn't sink the build
             print(f"  MISSING  {it['title']}  ({it['art']}): {e}")
+    for f in IMG.glob("*.jpg"):  # art for entries that have since been cut
+        if f"img/{f.name}" not in seen:
+            f.unlink()
+            print(f"  removed  {f.name}")
 
     # Plates: the two paintings, shrunk from ~600 KB PNGs to something a phone can stomach.
     ART.mkdir(parents=True, exist_ok=True)
@@ -448,18 +490,29 @@ def fmt(score):
     return f"{score:.1f}"
 
 
-def card(it, rank, aspect, label=None, big=False, stamp=None):
+PAW = ('<svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/>'
+       '<ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/>'
+       '<ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg>')
+
+
+def card(it, rank, aspect, label=None, big=False, guest=False):
     w, h = dims(it["img"])
     meta = " · ".join(x for x in (it["by"], it["year"]) if x)
-    stamp = stamp or fmt(it["score"])
-    score_html = f'<span class="score{" gold" if it["score"] and it["score"] >= 9.5 else ""}">{fmt(it["score"])}</span>' if it["score"] else ""
+    if guest:
+        stamp = f"{PAW}<small>Approved</small>"
+        sig = "L.H.B.C."
+        score_html = f'<span class="score paw-score" title="Purr-approved">{PAW}</span>'
+    else:
+        stamp = f"<b>{fmt(it['score'])}</b><small>Moosey rates</small>"
+        sig = "M."
+        score_html = f'<span class="score{" gold" if it["score"] >= 9.5 else ""}">{fmt(it["score"])}</span>'
     tag = f'<span class="tag">{e(label)}</span>' if label else ""
     return f"""
       <article class="card{' big' if big else ''}" tabindex="0" style="--i:{rank}">
         <div class="art" style="aspect-ratio:{aspect}">
           <img src="{it['img']}" alt="{e(it['title'])}" width="{w}" height="{h}" loading="lazy" decoding="async">
           <span class="rank">{rank}</span>
-          <div class="slip"><span class="stamp"><b>{stamp}</b><small>Moosey rates</small></span><p>{e(it['review'])}</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp">{stamp}</span><p>{e(it['review'])}</p><span class="sig">{sig}</span></div>
         </div>
         <div class="cap">
           <div>{tag}<h3>{e(it['title'])}</h3><p>{e(meta)}</p></div>
@@ -476,17 +529,106 @@ def mentions(label, items):
 
 
 def chapter(c, cards):
-    return f"""
-  <section class="chapter" id="{c['key']}">
+    guest = c.get("guest")
+    html_ = f"""
+  <section class="chapter{' guest' if guest else ''}" id="{c['key']}">
     <header class="sec-head" data-num="{c['num']}">
-      <p class="eyebrow">Chapter {c['num']}</p>
+      {cat_svg() if guest else ''}
+      <p class="eyebrow">Chapter {c['num']}{' · A guest column' if guest else ''}</p>
       <h2>{c['name']}</h2>
       <p class="sec-deck">{e(c['deck'])}</p>
+      {'<p class="byline">Reviews by the Long-Haired Black Cat</p>' if guest else ''}
     </header>
     <div class="grid">{cards}
     </div>
     {mentions(c['mentions_label'], c['mentions']) if c.get('mentions') else ''}
   </section>"""
+    # the guest column gets its own night sky, so it needs a full-width wrapper
+    return f'<div class="guest-wrap"><div class="stars"></div>{html_}</div>' if guest else html_
+
+
+def fluff(cx, cy, rx, ry, n, amp, seed, side_boost=0.0, bottom_boost=0.0):
+    """A closed blob whose edge is a ring of fur tufts; boosts swell the ruff at the cheeks or base."""
+    rnd = random.Random(seed)  # seeded so the cat doesn't get a new haircut every build
+    pts = []
+    for i in range(2 * n):
+        t = 2 * math.pi * i / (2 * n) - math.pi / 2
+        a = amp + side_boost * abs(math.cos(t)) ** 2 + bottom_boost * max(0, math.sin(t)) ** 2
+        k = 1 + a * (0.75 + 0.5 * rnd.random()) if i % 2 == 0 else 1 - a * 0.25
+        tw = t + (rnd.random() - 0.5) * 0.08
+        pts.append((cx + rx * k * math.cos(tw), cy + ry * k * math.sin(tw)))
+    d = f"M{pts[1][0]:.1f},{pts[1][1]:.1f}"
+    for j in range(1, n + 1):
+        tip, nxt = pts[(2 * j) % (2 * n)], pts[(2 * j + 1) % (2 * n)]
+        d += f" Q{tip[0]:.1f},{tip[1]:.1f} {nxt[0]:.1f},{nxt[1]:.1f}"
+    return d + "Z"
+
+
+def sparkle(x, y, r, delay):
+    d = f"M{x},{y-r} Q{x},{y} {x+r},{y} Q{x},{y} {x},{y+r} Q{x},{y} {x-r},{y} Q{x},{y} {x},{y-r}Z"
+    return f'<path class="spark" style="animation-delay:{delay}s" d="{d}"/>'
+
+
+def cat_svg():
+    fur = "#17131f"
+    body = fluff(100, 168, 46, 44, 26, 0.09, 3, bottom_boost=0.05)
+    chest = fluff(100, 140, 30, 26, 14, 0.12, 9)
+    head = fluff(100, 96, 40, 35, 30, 0.07, 5, side_boost=0.16, bottom_boost=0.08)
+    # the tail is a string of overlapping puffs along a curve, which reads as one fluffy brush
+    puffs = "".join(
+        f'<circle cx="{140 + 30 * math.sin(u * 2.4) - 4 * u:.1f}" cy="{196 - 70 * u + 10 * u * u:.1f}" '
+        f'r="{13 - 5 * u + (2.2 if i % 2 else 0):.1f}"/>'
+        for i, u in ((i, i / 15) for i in range(16))
+    )
+    tip = fluff(166.5, 128, 10, 10, 9, 0.22, 11)
+    return f"""<svg class="cat" viewBox="0 0 200 230" role="img" aria-label="A long-haired black cat with golden eyes, sitting under a crescent moon">
+        <defs>
+          <radialGradient id="halo"><stop offset="0" stop-color="#8f7cf0" stop-opacity=".42"/><stop offset="1" stop-color="#8f7cf0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="iris" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#ffe08a"/><stop offset=".65" stop-color="#f2a93b"/><stop offset="1" stop-color="#b8661e"/></radialGradient>
+          <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#c9bcff" flood-opacity=".55"/></filter>
+        </defs>
+        <circle cx="100" cy="120" r="95" fill="url(#halo)"/>
+        <path class="moon" d="M160,22 a18,18 0 1,0 18,26 a14,14 0 1,1 -18,-26Z"/>
+        {sparkle(30, 46, 6, 0)}{sparkle(176, 92, 4.5, 1.3)}{sparkle(22, 150, 4, 2.1)}{sparkle(60, 20, 3.5, .7)}
+        <g filter="url(#rim)" fill="{fur}">
+          <g class="tail">{puffs}<path d="{tip}"/></g>
+          <path d="{body}"/><path d="{chest}"/>
+          <ellipse cx="84" cy="206" rx="13" ry="9"/><ellipse cx="116" cy="206" rx="13" ry="9"/>
+          <path d="M60,86 L68,48 Q72,41 78,46 L98,66Z"/><path d="M140,86 L132,48 Q128,41 122,46 L102,66Z"/>
+          <path d="M71,47 l-2.5,-8 M73.5,45.5 l.5,-8 M129,47 l2.5,-8 M126.5,45.5 l-.5,-8" stroke="{fur}" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="{head}"/>
+        </g>
+        <path d="M71,54 L75,76 L90,68Z M129,54 L125,76 L110,68Z" fill="#3b2e55"/>
+        <g fill="none" stroke="rgba(201,188,255,.5)" stroke-width=".8" stroke-linecap="round">
+          <path d="M78,207 v-5 M84,208 v-6 M90,207 v-5 M110,207 v-5 M116,208 v-6 M122,207 v-5"/>
+          <path d="M92,150 q8,6 16,0 M88,160 q12,8 24,0 M94,171 q6,4 12,0" opacity=".55"/>
+        </g>
+        <g class="eyes">
+          <ellipse cx="84" cy="97" rx="10" ry="11" fill="url(#iris)"/><ellipse cx="116" cy="97" rx="10" ry="11" fill="url(#iris)"/>
+          <ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/>
+          <circle cx="80.5" cy="92.5" r="2.6" fill="#fff"/><circle cx="112.5" cy="92.5" r="2.6" fill="#fff"/>
+          <circle cx="88" cy="103" r="1.1" fill="#fff" opacity=".8"/><circle cx="120" cy="103" r="1.1" fill="#fff" opacity=".8"/>
+        </g>
+        <path d="M96,110 h8 l-4,4.5Z" fill="#c58fa8"/>
+        <path d="M100,114.5 v2.5 q-3,3.5 -6,1 M100,117 q3,3.5 6,1" fill="none" stroke="#4a3f63" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M86,113 q-16,-3 -30,-1 M86,116 q-15,1 -28,5 M114,113 q16,-3 30,-1 M114,116 q15,1 28,5" fill="none" stroke="rgba(220,216,238,.45)" stroke-width=".7" stroke-linecap="round"/>
+        <path d="M93,127 q7,5 14,0" fill="none" stroke="#c9a54a" stroke-width="1.2"/>
+        <path d="M100,129 a5,5 0 1,0 4,7 a4,4 0 1,1 -4,-7Z" fill="#e8c35a"/>
+      </svg>"""
+
+
+def memorial(m):
+    return f"""
+<section class="memoriam" id="memoriam">
+  <figure class="arch"><img src="{m['img']}" alt="Ragnar Volarus" loading="lazy"></figure>
+  <div class="memoriam-text">
+    <p class="eyebrow">In memoriam</p>
+    <h2>{e(m['title'])}</h2>
+    <p class="of">{e(m['by'])} · Red Rising</p>
+    <p class="epitaph">{e(m['review'])}</p>
+    <p class="valkyrie">May the Valkyrie carry him home.</p>
+  </div>
+</section>"""
 
 
 def build():
@@ -499,27 +641,22 @@ def build():
         for i, k in enumerate(TOP_FIVE, 1)
     )
     chapters = "".join(
-        chapter(c, "".join(card(it, i, c["aspect"]) for i, it in enumerate(c["items"], 1)))
+        chapter(c, "".join(card(it, i, c["aspect"], guest=c.get("guest")) for i, it in enumerate(c["items"], 1)))
         for c in CATEGORIES
-    )
-    chars = chapter(
-        CHARACTERS,
-        "".join(card(it, i, CHARACTERS["aspect"], stamp=f"№{i}") for i, it in enumerate(CHARACTERS["items"], 1)),
     )
     nuggets = "".join(
         f"""<li tabindex="0"><img src="{n['img']}" alt="" loading="lazy">
           <div><b>{e(n['title'])}</b><i>{e(n['by'])}</i></div><span class="tip">{e(n['review'])}</span></li>"""
         for n in NUGGETS
     )
-    contents = [("five", "The Five", "Frontis.")] + [(c["key"], c["name"], c["num"]) for c in CATEGORIES] + [
-        ("characters", "Characters", "V")]
+    contents = [("five", "The Five", "Frontis.")] + [(c["key"], c["name"], c["num"]) for c in CATEGORIES]
     toc = "".join(
         f'<li><a href="#{k}"><span>{n}</span><span class="leader"></span><span class="pg">{p}</span></a></li>'
         for k, n, p in contents
     )
     nav = "".join(f'<a href="#{k}">{n}</a>' for k, n, _ in contents)
 
-    page = TEMPLATE.format(css=CSS, five=five, chapters=chapters, chars=chars, nuggets=nuggets, toc=toc, nav=nav)
+    page = TEMPLATE.format(css=CSS, five=five, chapters=chapters, memorial=memorial(MEMORIAL), nuggets=nuggets, toc=toc, nav=nav)
     OUT.mkdir(exist_ok=True)
     (OUT / "index.html").write_text(page, encoding="utf-8")
     (OUT / ".nojekyll").touch()  # stop Pages running Jekyll over a site that doesn't need it
@@ -554,7 +691,7 @@ TEMPLATE = """<!doctype html>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
     <h1><span class="w1">Moosey</span><em class="w2">Rates</em></h1>
-    <p class="deck">A ledger of the records, films, series and games that earned their keep.
+    <p class="deck">A ledger of the records, films, series and games that earned their keep, plus a guest column from the cat.
       Scores out of ten. <em>Opinions out of line.</em></p>
     <div class="contents">
       <h2>Contents</h2>
@@ -590,8 +727,9 @@ TEMPLATE = """<!doctype html>
   </blockquote>
 </section>
 
-<main>{chapters}{chars}
+<main>{chapters}
 </main>
+{memorial}
 
 <footer class="colophon">
   <div class="colophon-art"></div>
@@ -823,6 +961,68 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .colophon .small{margin-top:1rem;font:.75rem/1.6 "IM Fell English SC",serif;letter-spacing:.16em;color:var(--paper-dim)}
 .colophon .norsk{margin-top:1.4rem;font-style:italic;color:var(--amber-2)}
 
+/* ---------- the guest column: same paper, different night ---------- */
+.guest-wrap{position:relative;overflow:hidden;margin-top:clamp(2rem,5vw,4rem);
+  background:radial-gradient(900px 520px at 50% 6%,rgba(143,124,240,.17),transparent 70%),
+             linear-gradient(to bottom,var(--ink),#110f1f 12%,#110f1f 88%,var(--ink))}
+.stars,.stars::after{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(1px 1px at 12% 18%,#e9e2ff,transparent),radial-gradient(1px 1px at 78% 9%,#e9e2ff,transparent),
+    radial-gradient(1.5px 1.5px at 33% 42%,#cfc5ff,transparent),radial-gradient(1px 1px at 91% 35%,#e9e2ff,transparent),
+    radial-gradient(1px 1px at 55% 71%,#e9e2ff,transparent),radial-gradient(1.5px 1.5px at 6% 83%,#cfc5ff,transparent),
+    radial-gradient(1px 1px at 67% 91%,#e9e2ff,transparent),radial-gradient(1px 1px at 24% 64%,#e9e2ff,transparent);
+  background-size:520px 520px;opacity:.55;animation:twinkle-field 7s ease-in-out infinite alternate}
+.stars::after{content:"";background-size:330px 330px;background-position:140px 90px;animation-delay:-3.5s;opacity:.4}
+@keyframes twinkle-field{from{opacity:.2}to{opacity:.65}}
+.guest .sec-head::before{display:none}  /* the cat is the chapter mark here */
+.guest .eyebrow,.guest .mentions h4{color:#a99bf0}
+.guest .sec-head h2{color:#efe9ff;text-shadow:0 0 .6em rgba(143,124,240,.35)}
+.guest .sec-deck{color:#b9b0d6}
+.byline{margin-top:.9rem;font:.78rem/1 "IM Fell English SC",serif;letter-spacing:.22em;color:#c9bcff}
+.cat{display:block;width:min(220px,55vw);height:auto;margin:-1rem auto .6rem;overflow:visible}
+.cat .moon{fill:#f3e9c6;filter:drop-shadow(0 0 8px rgba(243,233,198,.55))}
+.cat .spark{fill:#ece6ff;transform-box:fill-box;transform-origin:center;animation:sparkle 3.2s ease-in-out infinite}
+.cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite}
+.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:swish 4.5s ease-in-out infinite alternate}
+@keyframes sparkle{0%,100%{opacity:.2;transform:scale(.55)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.06)}}
+@keyframes swish{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
+.guest .art::before{background:radial-gradient(circle at 0 0,rgba(12,9,26,.8),transparent 36%),linear-gradient(rgba(70,50,160,.22),rgba(70,50,160,.22))}
+.guest .art img{filter:grayscale(.6) brightness(.8) contrast(1.05)}
+.guest .rank{color:#ece6ff}
+.guest .slip{background:linear-gradient(170deg,#28224a,#1c1834);color:#e8e2fb;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 1px rgba(201,188,255,.14)}
+.guest .slip::before{background:#28224a}
+.guest .slip .sig{font:.72rem/1 "IM Fell English SC",serif;letter-spacing:.16em;color:#c9bcff;margin-top:.5rem}
+.guest .stamp{color:#c9bcff;mix-blend-mode:normal;box-shadow:inset 0 0 0 3px #241e42,inset 0 0 0 4px currentColor}
+.guest .stamp .paw{width:1.45rem;height:1.45rem;fill:currentColor;margin:0 auto .1rem}
+.guest .stamp small{font-size:.44rem}
+.paw-score .paw{width:1.25rem;height:1.25rem;fill:#8f7cf0;filter:drop-shadow(0 0 6px rgba(143,124,240,.6))}
+.guest .card:hover .art,.guest .card:focus-within .art{box-shadow:0 30px 60px -24px rgba(0,0,0,.95),0 0 50px -10px rgba(143,124,240,.55)}
+.guest .card:hover .art::after,.guest .card:focus-within .art::after{border-color:rgba(201,188,255,.5)}
+.guest .card:hover h3,.guest .card:focus-within h3{color:#d9cfff}
+.guest .mentions{border-top-color:rgba(201,188,255,.14)}
+.guest .hm:hover,.guest .hm:focus{color:#d9cfff;border-bottom-color:rgba(201,188,255,.5)}
+.guest .tip{background:linear-gradient(170deg,#28224a,#1c1834);color:#e8e2fb;box-shadow:0 14px 34px rgba(0,0,0,.6),inset 0 0 0 1px rgba(201,188,255,.14)}
+.guest .tip::after{border-top-color:#1c1834}
+
+/* ---------- in memoriam ---------- */
+.memoriam{max-width:820px;display:grid;grid-template-columns:auto 1fr;gap:clamp(1.6rem,4vw,3rem);align-items:center;
+  padding-top:clamp(4rem,8vw,6rem);padding-bottom:clamp(3rem,6vw,4rem)}
+.memoriam::before{content:"";position:absolute;top:0;left:50%;width:min(60%,22rem);height:1px;transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,rgba(236,223,198,.3),transparent)}
+.arch{width:clamp(130px,18vw,180px);aspect-ratio:3/4;border-radius:999px 999px 6px 6px;overflow:hidden;padding:6px;
+  border:1px solid rgba(236,223,198,.25);animation:candle 4s ease-in-out infinite alternate}
+.arch img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:999px 999px 3px 3px;
+  filter:grayscale(1) contrast(1.1) brightness(.85);transition:filter 1.2s var(--ease)}
+.memoriam:hover .arch img{filter:sepia(.5) brightness(.95)}
+@keyframes candle{0%{box-shadow:0 0 40px -12px rgba(224,138,50,.35)}45%{box-shadow:0 0 55px -10px rgba(224,138,50,.5)}
+  55%{box-shadow:0 0 38px -12px rgba(224,138,50,.3)}100%{box-shadow:0 0 60px -8px rgba(224,138,50,.48)}}
+.memoriam .eyebrow::before,.memoriam .eyebrow::after{display:none}
+.memoriam .eyebrow{margin-bottom:.5rem}
+.memoriam h2{font:400 clamp(2.2rem,5vw,3.4rem)/1 "IM Fell English",serif}
+.memoriam .of{font:.76rem/1.4 "IM Fell English SC",serif;letter-spacing:.16em;color:var(--muted);margin-top:.5rem}
+.memoriam .epitaph{margin-top:1rem;font-style:italic;font-size:1.15rem;color:var(--paper-2);max-width:30rem}
+.memoriam .valkyrie{margin-top:.9rem;font:italic 1.05rem "IM Fell English",serif;color:var(--amber)}
+
 /* ---------- motion ---------- */
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @keyframes drop{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
@@ -832,7 +1032,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @keyframes appear{from{opacity:0;transform:translateY(46px) scale(.97)}to{opacity:1;transform:none}}
 
 @supports (animation-timeline: view()){
-  .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets{
+  .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets,.memoriam{
     animation:appear linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
   .interlude-art{animation:none;transform:scale(1.15)}
   .interlude-art{animation:pan linear both;animation-timeline:view()}
@@ -849,6 +1049,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .plate{width:min(72%,340px)}
   .frame img{max-height:60svh}
   .kicker span:nth-child(3){display:none}
+  .memoriam{grid-template-columns:1fr;justify-items:center;text-align:center}
   .grid{grid-template-columns:repeat(3,1fr)}
   .five-grid{grid-template-columns:1fr 1fr}
   .five-grid .big{grid-column:span 2;grid-row:auto}
@@ -863,6 +1064,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .stamp b{font-size:1.15rem}
   .rank{font-size:2rem}
   .hm+.hm::before{margin:0 .45rem}
+  .guest .eyebrow::before,.guest .eyebrow::after{display:none}
 }
 @media (hover:none){ .card{cursor:pointer} }
 @media (prefers-reduced-motion:reduce){

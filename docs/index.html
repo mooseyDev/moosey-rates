@@ -229,6 +229,68 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .colophon .small{margin-top:1rem;font:.75rem/1.6 "IM Fell English SC",serif;letter-spacing:.16em;color:var(--paper-dim)}
 .colophon .norsk{margin-top:1.4rem;font-style:italic;color:var(--amber-2)}
 
+/* ---------- the guest column: same paper, different night ---------- */
+.guest-wrap{position:relative;overflow:hidden;margin-top:clamp(2rem,5vw,4rem);
+  background:radial-gradient(900px 520px at 50% 6%,rgba(143,124,240,.17),transparent 70%),
+             linear-gradient(to bottom,var(--ink),#110f1f 12%,#110f1f 88%,var(--ink))}
+.stars,.stars::after{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(1px 1px at 12% 18%,#e9e2ff,transparent),radial-gradient(1px 1px at 78% 9%,#e9e2ff,transparent),
+    radial-gradient(1.5px 1.5px at 33% 42%,#cfc5ff,transparent),radial-gradient(1px 1px at 91% 35%,#e9e2ff,transparent),
+    radial-gradient(1px 1px at 55% 71%,#e9e2ff,transparent),radial-gradient(1.5px 1.5px at 6% 83%,#cfc5ff,transparent),
+    radial-gradient(1px 1px at 67% 91%,#e9e2ff,transparent),radial-gradient(1px 1px at 24% 64%,#e9e2ff,transparent);
+  background-size:520px 520px;opacity:.55;animation:twinkle-field 7s ease-in-out infinite alternate}
+.stars::after{content:"";background-size:330px 330px;background-position:140px 90px;animation-delay:-3.5s;opacity:.4}
+@keyframes twinkle-field{from{opacity:.2}to{opacity:.65}}
+.guest .sec-head::before{display:none}  /* the cat is the chapter mark here */
+.guest .eyebrow,.guest .mentions h4{color:#a99bf0}
+.guest .sec-head h2{color:#efe9ff;text-shadow:0 0 .6em rgba(143,124,240,.35)}
+.guest .sec-deck{color:#b9b0d6}
+.byline{margin-top:.9rem;font:.78rem/1 "IM Fell English SC",serif;letter-spacing:.22em;color:#c9bcff}
+.cat{display:block;width:min(220px,55vw);height:auto;margin:-1rem auto .6rem;overflow:visible}
+.cat .moon{fill:#f3e9c6;filter:drop-shadow(0 0 8px rgba(243,233,198,.55))}
+.cat .spark{fill:#ece6ff;transform-box:fill-box;transform-origin:center;animation:sparkle 3.2s ease-in-out infinite}
+.cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite}
+.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:swish 4.5s ease-in-out infinite alternate}
+@keyframes sparkle{0%,100%{opacity:.2;transform:scale(.55)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.06)}}
+@keyframes swish{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
+.guest .art::before{background:radial-gradient(circle at 0 0,rgba(12,9,26,.8),transparent 36%),linear-gradient(rgba(70,50,160,.22),rgba(70,50,160,.22))}
+.guest .art img{filter:grayscale(.6) brightness(.8) contrast(1.05)}
+.guest .rank{color:#ece6ff}
+.guest .slip{background:linear-gradient(170deg,#28224a,#1c1834);color:#e8e2fb;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 0 0 0 1px rgba(201,188,255,.14)}
+.guest .slip::before{background:#28224a}
+.guest .slip .sig{font:.72rem/1 "IM Fell English SC",serif;letter-spacing:.16em;color:#c9bcff;margin-top:.5rem}
+.guest .stamp{color:#c9bcff;mix-blend-mode:normal;box-shadow:inset 0 0 0 3px #241e42,inset 0 0 0 4px currentColor}
+.guest .stamp .paw{width:1.45rem;height:1.45rem;fill:currentColor;margin:0 auto .1rem}
+.guest .stamp small{font-size:.44rem}
+.paw-score .paw{width:1.25rem;height:1.25rem;fill:#8f7cf0;filter:drop-shadow(0 0 6px rgba(143,124,240,.6))}
+.guest .card:hover .art,.guest .card:focus-within .art{box-shadow:0 30px 60px -24px rgba(0,0,0,.95),0 0 50px -10px rgba(143,124,240,.55)}
+.guest .card:hover .art::after,.guest .card:focus-within .art::after{border-color:rgba(201,188,255,.5)}
+.guest .card:hover h3,.guest .card:focus-within h3{color:#d9cfff}
+.guest .mentions{border-top-color:rgba(201,188,255,.14)}
+.guest .hm:hover,.guest .hm:focus{color:#d9cfff;border-bottom-color:rgba(201,188,255,.5)}
+.guest .tip{background:linear-gradient(170deg,#28224a,#1c1834);color:#e8e2fb;box-shadow:0 14px 34px rgba(0,0,0,.6),inset 0 0 0 1px rgba(201,188,255,.14)}
+.guest .tip::after{border-top-color:#1c1834}
+
+/* ---------- in memoriam ---------- */
+.memoriam{max-width:820px;display:grid;grid-template-columns:auto 1fr;gap:clamp(1.6rem,4vw,3rem);align-items:center;
+  padding-top:clamp(4rem,8vw,6rem);padding-bottom:clamp(3rem,6vw,4rem)}
+.memoriam::before{content:"";position:absolute;top:0;left:50%;width:min(60%,22rem);height:1px;transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,rgba(236,223,198,.3),transparent)}
+.arch{width:clamp(130px,18vw,180px);aspect-ratio:3/4;border-radius:999px 999px 6px 6px;overflow:hidden;padding:6px;
+  border:1px solid rgba(236,223,198,.25);animation:candle 4s ease-in-out infinite alternate}
+.arch img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:999px 999px 3px 3px;
+  filter:grayscale(1) contrast(1.1) brightness(.85);transition:filter 1.2s var(--ease)}
+.memoriam:hover .arch img{filter:sepia(.5) brightness(.95)}
+@keyframes candle{0%{box-shadow:0 0 40px -12px rgba(224,138,50,.35)}45%{box-shadow:0 0 55px -10px rgba(224,138,50,.5)}
+  55%{box-shadow:0 0 38px -12px rgba(224,138,50,.3)}100%{box-shadow:0 0 60px -8px rgba(224,138,50,.48)}}
+.memoriam .eyebrow::before,.memoriam .eyebrow::after{display:none}
+.memoriam .eyebrow{margin-bottom:.5rem}
+.memoriam h2{font:400 clamp(2.2rem,5vw,3.4rem)/1 "IM Fell English",serif}
+.memoriam .of{font:.76rem/1.4 "IM Fell English SC",serif;letter-spacing:.16em;color:var(--muted);margin-top:.5rem}
+.memoriam .epitaph{margin-top:1rem;font-style:italic;font-size:1.15rem;color:var(--paper-2);max-width:30rem}
+.memoriam .valkyrie{margin-top:.9rem;font:italic 1.05rem "IM Fell English",serif;color:var(--amber)}
+
 /* ---------- motion ---------- */
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @keyframes drop{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
@@ -238,7 +300,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 @keyframes appear{from{opacity:0;transform:translateY(46px) scale(.97)}to{opacity:1;transform:none}}
 
 @supports (animation-timeline: view()){
-  .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets{
+  .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets,.memoriam{
     animation:appear linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
   .interlude-art{animation:none;transform:scale(1.15)}
   .interlude-art{animation:pan linear both;animation-timeline:view()}
@@ -255,6 +317,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .plate{width:min(72%,340px)}
   .frame img{max-height:60svh}
   .kicker span:nth-child(3){display:none}
+  .memoriam{grid-template-columns:1fr;justify-items:center;text-align:center}
   .grid{grid-template-columns:repeat(3,1fr)}
   .five-grid{grid-template-columns:1fr 1fr}
   .five-grid .big{grid-column:span 2;grid-row:auto}
@@ -269,6 +332,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .stamp b{font-size:1.15rem}
   .rank{font-size:2rem}
   .hm+.hm::before{margin:0 .45rem}
+  .guest .eyebrow::before,.guest .eyebrow::after{display:none}
 }
 @media (hover:none){ .card{cursor:pointer} }
 @media (prefers-reduced-motion:reduce){
@@ -280,18 +344,18 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 
 <nav class="bar">
   <a class="mono" href="#top">M<i>r</i></a>
-  <div class="links"><a href="#five">The Five</a><a href="#music">Music</a><a href="#film">Film</a><a href="#series">Series</a><a href="#games">Games</a><a href="#characters">Characters</a></div>
+  <div class="links"><a href="#five">The Five</a><a href="#music">Music</a><a href="#film">Film</a><a href="#series">Series</a><a href="#games">Games</a><a href="#books">Books</a></div>
 </nav>
 
 <header class="hero" id="top">
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
     <h1><span class="w1">Moosey</span><em class="w2">Rates</em></h1>
-    <p class="deck">A ledger of the records, films, series and games that earned their keep.
+    <p class="deck">A ledger of the records, films, series and games that earned their keep, plus a guest column from the cat.
       Scores out of ten. <em>Opinions out of line.</em></p>
     <div class="contents">
       <h2>Contents</h2>
-      <ol><li><a href="#five"><span>The Five</span><span class="leader"></span><span class="pg">Frontis.</span></a></li><li><a href="#music"><span>Music</span><span class="leader"></span><span class="pg">I</span></a></li><li><a href="#film"><span>Film</span><span class="leader"></span><span class="pg">II</span></a></li><li><a href="#series"><span>Series</span><span class="leader"></span><span class="pg">III</span></a></li><li><a href="#games"><span>Games</span><span class="leader"></span><span class="pg">IV</span></a></li><li><a href="#characters"><span>Characters</span><span class="leader"></span><span class="pg">V</span></a></li></ol>
+      <ol><li><a href="#five"><span>The Five</span><span class="leader"></span><span class="pg">Frontis.</span></a></li><li><a href="#music"><span>Music</span><span class="leader"></span><span class="pg">I</span></a></li><li><a href="#film"><span>Film</span><span class="leader"></span><span class="pg">II</span></a></li><li><a href="#series"><span>Series</span><span class="leader"></span><span class="pg">III</span></a></li><li><a href="#games"><span>Games</span><span class="leader"></span><span class="pg">IV</span></a></li><li><a href="#books"><span>Books</span><span class="leader"></span><span class="pg">V</span></a></li></ol>
     </div>
   </div>
   <figure class="plate">
@@ -367,7 +431,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
     <h4>Moosey's special nuggets</h4>
     <p>Not ranked, not forgotten. Kept in the top drawer.</p>
     <ul><li tabindex="0"><img src="img/tvmaze-vikings.jpg" alt="" loading="lazy">
-          <div><b>Vikings, Seasons I–IV</b><i>the Ragnar years</i></div><span class="tip">The good seasons. Before the saga got soggy.</span></li><li tabindex="0"><img src="img/itunes-like-clockwork-queens-of-the-stone-age.jpg" alt="" loading="lazy">
+          <div><b>Vikings, Seasons I–IV</b><i>the Ragnar years</i></div><span class="tip">The good seasons. Before the saga got soggy.</span></li><li tabindex="0"><img src="img/wiki-like-clockwork.jpg" alt="" loading="lazy">
           <div><b>…Like Clockwork</b><i>Queens of the Stone Age</i></div><span class="tip">Already in the ten. Mentioned twice because it earned it.</span></li><li tabindex="0"><img src="img/wiki-maggot-brain.jpg" alt="" loading="lazy">
           <div><b>Maggot Brain</b><i>Funkadelic</i></div><span class="tip">Ten minutes of Eddie Hazel&#x27;s guitar weeping. You will too.</span></li><li tabindex="0"><img src="img/wiki-morning-star-brown-novel.jpg" alt="" loading="lazy">
           <div><b>Morning Star</b><i>Pierce Brown, a book</i></div><span class="tip">Red Rising&#x27;s third act and the best payoff in modern sci-fi. Ragnar. That&#x27;s all.</span></li></ul>
@@ -385,9 +449,11 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 <main>
   <section class="chapter" id="music">
     <header class="sec-head" data-num="I">
+      
       <p class="eyebrow">Chapter I</p>
       <h2>Music</h2>
       <p class="sec-deck">Ten records I&#x27;d drag out of a burning house, in the order I&#x27;d grab them.</p>
+      
     </header>
     <div class="grid">
       <article class="card" tabindex="0" style="--i:1">
@@ -414,7 +480,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
       </article>
       <article class="card" tabindex="0" style="--i:3">
         <div class="art" style="aspect-ratio:1 / 1">
-          <img src="img/itunes-like-clockwork-queens-of-the-stone-age.jpg" alt="…Like Clockwork" width="900" height="900" loading="lazy" decoding="async">
+          <img src="img/wiki-like-clockwork.jpg" alt="…Like Clockwork" width="300" height="300" loading="lazy" decoding="async">
           <span class="rank">3</span>
           <div class="slip"><span class="stamp"><b>9.1</b><small>Moosey rates</small></span><p>Josh Homme nearly died on an operating table and came back with this, which seems a fair trade. Wounded, swaggering, and far sexier than desert rock has any right to be.</p><span class="sig">M.</span></div>
         </div>
@@ -505,9 +571,11 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   </section>
   <section class="chapter" id="film">
     <header class="sec-head" data-num="II">
+      
       <p class="eyebrow">Chapter II</p>
       <h2>Film</h2>
       <p class="sec-deck">Ten films worth the popcorn, the overpriced seat and the bloke on his phone in row F.</p>
+      
     </header>
     <div class="grid">
       <article class="card" tabindex="0" style="--i:1">
@@ -625,9 +693,11 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   </section>
   <section class="chapter" id="series">
     <header class="sec-head" data-num="III">
+      
       <p class="eyebrow">Chapter III</p>
       <h2>Series</h2>
       <p class="sec-deck">Ten reasons I have never once gone to bed at a sensible hour.</p>
+      
     </header>
     <div class="grid">
       <article class="card" tabindex="0" style="--i:1">
@@ -745,9 +815,11 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   </section>
   <section class="chapter" id="games">
     <header class="sec-head" data-num="IV">
+      
       <p class="eyebrow">Chapter IV</p>
       <h2>Games</h2>
       <p class="sec-deck">Ten games that cost me sleep, friendships, and roughly a year of my life. No regrets.</p>
+      
     </header>
     <div class="grid">
       <article class="card" tabindex="0" style="--i:1">
@@ -862,73 +934,174 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
       </article>
     </div>
     <div class="mentions"><h4>Special mentions</h4><p><span class="hm" tabindex="0">Destiny, co-op<span class="tip">The loot&#x27;s mediocre. Raiding with mates is sacred.</span></span><span class="hm" tabindex="0">Skyrim<span class="tip">You&#x27;ve played it. I&#x27;ve played it. My fridge has played it.</span></span><span class="hm" tabindex="0">Dark Souls III<span class="tip">Praise the sun, then die to the Nameless King.</span></span><span class="hm" tabindex="0">Bad Company 2<span class="tip">Buildings that fall down when you shoot them. Revolutionary.</span></span><span class="hm" tabindex="0">LittleBigPlanet<span class="tip">Sackboy. Need I say more.</span></span><span class="hm" tabindex="0">Metal Gear Solid V<span class="tip">Unfinished, and still the best stealth sandbox ever made.</span></span><span class="hm" tabindex="0">Modern Warfare (2019)<span class="tip">The lighting alone deserves an award.</span></span><span class="hm" tabindex="0">Ghost of Tsushima<span class="tip">Follow the wind. Every standoff is pure Kurosawa.</span></span><span class="hm" tabindex="0">Red Dead Redemption 2<span class="tip">Arthur Morgan deserved better. So did my horse.</span></span></p></div>
-  </section>
-  <section class="chapter" id="characters">
+  </section><div class="guest-wrap"><div class="stars"></div>
+  <section class="chapter guest" id="books">
     <header class="sec-head" data-num="V">
-      <p class="eyebrow">Chapter V</p>
-      <h2>Characters</h2>
-      <p class="sec-deck">Five people who don&#x27;t exist and whom I&#x27;d follow into a war anyway.</p>
+      <svg class="cat" viewBox="0 0 200 230" role="img" aria-label="A long-haired black cat with golden eyes, sitting under a crescent moon">
+        <defs>
+          <radialGradient id="halo"><stop offset="0" stop-color="#8f7cf0" stop-opacity=".42"/><stop offset="1" stop-color="#8f7cf0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="iris" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#ffe08a"/><stop offset=".65" stop-color="#f2a93b"/><stop offset="1" stop-color="#b8661e"/></radialGradient>
+          <filter id="rim" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#c9bcff" flood-opacity=".55"/></filter>
+        </defs>
+        <circle cx="100" cy="120" r="95" fill="url(#halo)"/>
+        <path class="moon" d="M160,22 a18,18 0 1,0 18,26 a14,14 0 1,1 -18,-26Z"/>
+        <path class="spark" style="animation-delay:0s" d="M30,40 Q30,46 36,46 Q30,46 30,52 Q30,46 24,46 Q30,46 30,40Z"/><path class="spark" style="animation-delay:1.3s" d="M176,87.5 Q176,92 180.5,92 Q176,92 176,96.5 Q176,92 171.5,92 Q176,92 176,87.5Z"/><path class="spark" style="animation-delay:2.1s" d="M22,146 Q22,150 26,150 Q22,150 22,154 Q22,150 18,150 Q22,150 22,146Z"/><path class="spark" style="animation-delay:0.7s" d="M60,16.5 Q60,20 63.5,20 Q60,20 60,23.5 Q60,20 56.5,20 Q60,20 60,16.5Z"/>
+        <g filter="url(#rim)" fill="#17131f">
+          <g class="tail"><circle cx="140.0" cy="196.0" r="13.0"/><circle cx="144.5" cy="191.4" r="14.9"/><circle cx="148.9" cy="186.8" r="12.3"/><circle cx="153.1" cy="182.4" r="14.2"/><circle cx="156.8" cy="178.0" r="11.7"/><circle cx="160.2" cy="173.8" r="13.5"/><circle cx="163.0" cy="169.6" r="11.0"/><circle cx="165.1" cy="165.5" r="12.9"/><circle cx="166.6" cy="161.5" r="10.3"/><circle cx="167.3" cy="157.6" r="12.2"/><circle cx="167.3" cy="153.8" r="9.7"/><circle cx="166.5" cy="150.0" r="11.5"/><circle cx="165.0" cy="146.4" r="9.0"/><circle cx="162.7" cy="142.8" r="10.9"/><circle cx="159.8" cy="139.4" r="8.3"/><circle cx="156.3" cy="136.0" r="10.2"/><path d="M170.0,119.2 Q174.3,118.7 174.7,123.3 Q178.2,126.0 175.8,129.7 Q177.5,133.9 172.7,135.1 Q170.2,139.1 166.4,137.4 Q162.1,138.8 160.2,135.0 Q155.7,134.1 157.2,129.9 Q155.0,125.9 158.2,123.6 Q158.7,119.1 162.9,119.2 Q166.6,115.9 170.0,119.2Z"/></g>
+          <path d="M105.0,125.3 Q112.5,121.4 114.5,127.3 Q124.0,127.0 124.8,132.1 Q134.3,133.8 133.6,139.4 Q141.8,140.3 140.0,148.4 Q146.4,151.7 144.0,158.9 Q149.9,163.1 145.0,168.6 Q148.8,174.6 143.5,178.6 Q147.4,183.3 139.1,189.0 Q141.3,196.3 132.6,197.3 Q133.2,206.3 125.6,202.9 Q124.8,212.6 114.3,208.3 Q114.5,217.3 106.6,210.0 Q98.1,217.3 94.9,210.2 Q88.2,217.1 84.2,207.8 Q76.6,212.0 74.4,202.9 Q64.5,203.9 66.1,195.9 Q56.4,195.0 59.5,186.4 Q53.0,186.5 56.1,177.1 Q49.1,172.3 55.0,167.8 Q49.7,163.3 56.6,156.6 Q52.7,151.7 59.5,149.4 Q59.3,138.8 65.4,140.6 Q66.1,131.9 73.4,133.3 Q77.8,125.4 85.3,127.3 Q88.7,122.2 93.0,125.5 Q100.2,120.6 105.0,125.3Z"/><path d="M105.7,115.3 Q113.6,112.8 118.1,120.3 Q126.1,120.7 126.3,129.2 Q132.7,132.4 129.1,139.8 Q133.1,146.4 126.0,151.3 Q126.2,157.4 118.8,159.2 Q113.5,166.7 106.3,164.6 Q100.3,169.5 93.0,164.5 Q86.2,165.9 81.5,159.5 Q73.5,158.5 74.2,151.7 Q67.8,147.0 70.9,140.4 Q66.5,134.1 74.2,128.4 Q72.5,122.3 81.6,120.4 Q84.3,114.3 93.4,115.4 Q99.7,110.9 105.7,115.3Z"/>
+          <ellipse cx="84" cy="206" rx="13" ry="9"/><ellipse cx="116" cy="206" rx="13" ry="9"/>
+          <path d="M60,86 L68,48 Q72,41 78,46 L98,66Z"/><path d="M140,86 L132,48 Q128,41 122,46 L102,66Z"/>
+          <path d="M71,47 l-2.5,-8 M73.5,45.5 l.5,-8 M129,47 l2.5,-8 M126.5,45.5 l-.5,-8" stroke="#17131f" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M105.0,61.9 Q109.9,58.7 113.3,63.8 Q117.4,61.6 120.6,67.1 Q127.8,64.6 124.9,70.2 Q133.7,68.3 131.0,76.4 Q140.5,73.7 134.3,81.8 Q145.8,84.4 137.1,89.8 Q147.4,92.6 137.7,95.0 Q149.6,99.3 137.2,101.6 Q148.4,108.7 134.9,108.8 Q142.9,119.2 131.1,115.1 Q136.7,125.1 125.1,121.1 Q125.7,129.4 118.6,125.3 Q118.2,134.9 112.5,127.8 Q110.7,134.9 105.1,129.4 Q100.7,135.1 95.7,129.5 Q90.1,134.1 88.6,128.1 Q80.3,132.3 80.9,125.0 Q72.8,128.9 74.0,120.4 Q64.6,121.8 70.2,116.5 Q56.5,116.6 66.1,110.6 Q52.5,110.0 63.0,102.7 Q53.6,101.8 62.3,96.8 Q49.0,92.4 63.2,88.5 Q52.6,80.9 65.1,82.9 Q59.3,75.3 69.6,75.7 Q67.1,69.0 74.9,70.4 Q71.7,64.4 81.8,65.9 Q82.0,61.8 88.2,63.3 Q90.4,58.7 97.2,61.7 Q100.8,58.4 105.0,61.9Z"/>
+        </g>
+        <path d="M71,54 L75,76 L90,68Z M129,54 L125,76 L110,68Z" fill="#3b2e55"/>
+        <g fill="none" stroke="rgba(201,188,255,.5)" stroke-width=".8" stroke-linecap="round">
+          <path d="M78,207 v-5 M84,208 v-6 M90,207 v-5 M110,207 v-5 M116,208 v-6 M122,207 v-5"/>
+          <path d="M92,150 q8,6 16,0 M88,160 q12,8 24,0 M94,171 q6,4 12,0" opacity=".55"/>
+        </g>
+        <g class="eyes">
+          <ellipse cx="84" cy="97" rx="10" ry="11" fill="url(#iris)"/><ellipse cx="116" cy="97" rx="10" ry="11" fill="url(#iris)"/>
+          <ellipse cx="85" cy="98" rx="3" ry="8.5" fill="#0b0910"/><ellipse cx="117" cy="98" rx="3" ry="8.5" fill="#0b0910"/>
+          <circle cx="80.5" cy="92.5" r="2.6" fill="#fff"/><circle cx="112.5" cy="92.5" r="2.6" fill="#fff"/>
+          <circle cx="88" cy="103" r="1.1" fill="#fff" opacity=".8"/><circle cx="120" cy="103" r="1.1" fill="#fff" opacity=".8"/>
+        </g>
+        <path d="M96,110 h8 l-4,4.5Z" fill="#c58fa8"/>
+        <path d="M100,114.5 v2.5 q-3,3.5 -6,1 M100,117 q3,3.5 6,1" fill="none" stroke="#4a3f63" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M86,113 q-16,-3 -30,-1 M86,116 q-15,1 -28,5 M114,113 q16,-3 30,-1 M114,116 q15,1 28,5" fill="none" stroke="rgba(220,216,238,.45)" stroke-width=".7" stroke-linecap="round"/>
+        <path d="M93,127 q7,5 14,0" fill="none" stroke="#c9a54a" stroke-width="1.2"/>
+        <path d="M100,129 a5,5 0 1,0 4,7 a4,4 0 1,1 -4,-7Z" fill="#e8c35a"/>
+      </svg>
+      <p class="eyebrow">Chapter V · A guest column</p>
+      <h2>Books</h2>
+      <p class="sec-deck">Ten books, reviewed by the Long-Haired Black Cat, who sat on every one of them while they were being read. Moosey was not consulted.</p>
+      <p class="byline">Reviews by the Long-Haired Black Cat</p>
     </header>
     <div class="grid">
       <article class="card" tabindex="0" style="--i:1">
-        <div class="art" style="aspect-ratio:3 / 4">
-          <img src="img/mw-https-redrising-fandom-com-api-php-ragnar-volarus.jpg" alt="Ragnar Volarus" width="619" height="900" loading="lazy" decoding="async">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-secret-history.jpg" alt="The Secret History" width="240" height="403" loading="lazy" decoding="async">
           <span class="rank">1</span>
-          <div class="slip"><span class="stamp"><b>№1</b><small>Moosey rates</small></span><p>Seven-odd feet of Obsidian warrior with the soul of a poet. Every chapter he&#x27;s in is a better chapter. Hail Reaper, but hail Ragnar louder.</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Rich students, Greek verbs, and a murder in the snow. Everyone is terrible and beautifully dressed. Read it in one night on the warm bit of the radiator.</p><span class="sig">L.H.B.C.</span></div>
         </div>
         <div class="cap">
-          <div><h3>Ragnar Volarus</h3><p>Red Rising</p></div>
-          
+          <div><h3>The Secret History</h3><p>Donna Tartt · 1992</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
         </div>
       </article>
       <article class="card" tabindex="0" style="--i:2">
-        <div class="art" style="aspect-ratio:3 / 4">
-          <img src="img/mw-https-vikings-fandom-com-api-php-ragnar.jpg" alt="Ragnar Lothbrok" width="266" height="405" loading="lazy" decoding="async">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-book-thief.jpg" alt="The Book Thief" width="257" height="388" loading="lazy" decoding="async">
           <span class="rank">2</span>
-          <div class="slip"><span class="stamp"><b>№2</b><small>Moosey rates</small></span><p>Farmer, raider, king, and chaos gremlin with a smirk. The head tilt alone is a masterclass in acting.</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Narrated by Death, who is kinder than you&#x27;d think and nearly as patient as a cat. I wept into my own fur. Do not tell the dog.</p><span class="sig">L.H.B.C.</span></div>
         </div>
         <div class="cap">
-          <div><h3>Ragnar Lothbrok</h3><p>Vikings</p></div>
-          
+          <div><h3>The Book Thief</h3><p>Markus Zusak · 2005</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
         </div>
       </article>
       <article class="card" tabindex="0" style="--i:3">
-        <div class="art" style="aspect-ratio:3 / 4">
-          <img src="img/mw-https-bg3-wiki-w-api-php-aylin.jpg" alt="Dame Aylin" width="720" height="900" loading="lazy" decoding="async">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-nineteen-eighty-four.jpg" alt="Nineteen Eighty-Four" width="220" height="327" loading="lazy" decoding="async">
           <span class="rank">3</span>
-          <div class="slip"><span class="stamp"><b>№3</b><small>Moosey rates</small></span><p>Daughter of the moon, locked up for a century, comes out swinging. Pure knight-errant energy. Isobel, you lucky thing.</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Big Brother is watching you. I have always been watching you. The difference is that I&#x27;m adorable about it.</p><span class="sig">L.H.B.C.</span></div>
         </div>
         <div class="cap">
-          <div><h3>Dame Aylin</h3><p>Baldur&#x27;s Gate 3</p></div>
-          
+          <div><h3>Nineteen Eighty-Four</h3><p>George Orwell · 1949</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
         </div>
       </article>
       <article class="card" tabindex="0" style="--i:4">
-        <div class="art" style="aspect-ratio:3 / 4">
-          <img src="img/wiki-solid-snake.jpg" alt="Solid Snake" width="200" height="499" loading="lazy" decoding="async">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-to-kill-a-mockingbird.jpg" alt="To Kill a Mockingbird" width="728" height="900" loading="lazy" decoding="async">
           <span class="rank">4</span>
-          <div class="slip"><span class="stamp"><b>№4</b><small>Moosey rates</small></span><p>Bandana, cardboard box, a voice like a gravel driveway. The original tactical espionage action hero. Kept you waiting, huh?</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Scout is the finest human kitten in literature, and Atticus would give up the good chair for a cat. Quietly, devastatingly decent.</p><span class="sig">L.H.B.C.</span></div>
         </div>
         <div class="cap">
-          <div><h3>Solid Snake</h3><p>Metal Gear</p></div>
-          
+          <div><h3>To Kill a Mockingbird</h3><p>Harper Lee · 1960</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
         </div>
       </article>
       <article class="card" tabindex="0" style="--i:5">
-        <div class="art" style="aspect-ratio:3 / 4">
-          <img src="img/steam-1245620-library-hero-720-0-1185-620.jpg" alt="The Tarnished" width="465" height="620" loading="lazy" decoding="async">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-hobbit.jpg" alt="The Hobbit" width="282" height="353" loading="lazy" decoding="async">
           <span class="rank">5</span>
-          <div class="slip"><span class="stamp"><b>№5</b><small>Moosey rates</small></span><p>Silent, maidenless, endlessly dying and endlessly getting back up. The most honest self-insert in gaming.</p><span class="sig">M.</span></div>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>A small creature who adores second breakfast and hates leaving the house. Relatable. The dragon asleep on a pile of treasure is also, frankly, me.</p><span class="sig">L.H.B.C.</span></div>
         </div>
         <div class="cap">
-          <div><h3>The Tarnished</h3><p>Elden Ring</p></div>
-          
+          <div><h3>The Hobbit</h3><p>J. R. R. Tolkien · 1937</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
+        </div>
+      </article>
+      <article class="card" tabindex="0" style="--i:6">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-handmaid-s-tale.jpg" alt="The Handmaid&#x27;s Tale" width="250" height="381" loading="lazy" decoding="async">
+          <span class="rank">6</span>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Every sentence has its claws out. Afterwards I sat very still on the windowsill for an hour, which, admittedly, I do anyway.</p><span class="sig">L.H.B.C.</span></div>
+        </div>
+        <div class="cap">
+          <div><h3>The Handmaid&#x27;s Tale</h3><p>Margaret Atwood · 1985</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
+        </div>
+      </article>
+      <article class="card" tabindex="0" style="--i:7">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-picture-of-dorian-gray.jpg" alt="The Picture of Dorian Gray" width="596" height="900" loading="lazy" decoding="async">
+          <span class="rank">7</span>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>A beautiful creature who never ages and never faces consequences. I fail to see the tragedy. Wicked, witty, and gorgeous on every page.</p><span class="sig">L.H.B.C.</span></div>
+        </div>
+        <div class="cap">
+          <div><h3>The Picture of Dorian Gray</h3><p>Oscar Wilde · 1890</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
+        </div>
+      </article>
+      <article class="card" tabindex="0" style="--i:8">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-bell-jar.jpg" alt="The Bell Jar" width="232" height="354" loading="lazy" decoding="async">
+          <span class="rank">8</span>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Sharp, lonely and luminous, like a cold moon through a window. Not a cosy read. The true ones rarely are.</p><span class="sig">L.H.B.C.</span></div>
+        </div>
+        <div class="cap">
+          <div><h3>The Bell Jar</h3><p>Sylvia Plath · 1963</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
+        </div>
+      </article>
+      <article class="card" tabindex="0" style="--i:9">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-piranesi-novel.jpg" alt="Piranesi" width="260" height="372" loading="lazy" decoding="async">
+          <span class="rank">9</span>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>An endless house of statues and tides, kept by a gentle soul who talks to birds. This is what I dream about when my paws twitch.</p><span class="sig">L.H.B.C.</span></div>
+        </div>
+        <div class="cap">
+          <div><h3>Piranesi</h3><p>Susanna Clarke · 2020</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
+        </div>
+      </article>
+      <article class="card" tabindex="0" style="--i:10">
+        <div class="art" style="aspect-ratio:2 / 3">
+          <img src="img/wiki-the-color-purple.jpg" alt="The Color Purple" width="257" height="388" loading="lazy" decoding="async">
+          <span class="rank">10</span>
+          <div class="slip"><span class="stamp"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg><small>Approved</small></span><p>Letters to God, sisterhood, and a slow, hard-won joy. Celie deserves every good thing, and a sunny spot to lie in.</p><span class="sig">L.H.B.C.</span></div>
+        </div>
+        <div class="cap">
+          <div><h3>The Color Purple</h3><p>Alice Walker · 1982</p></div>
+          <span class="score paw-score" title="Purr-approved"><svg class="paw" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.2" cy="10.4" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="14.5" cy="6.2" rx="2.2" ry="2.9"/><ellipse cx="18.8" cy="10.4" rx="2.2" ry="2.8"/></svg></span>
         </div>
       </article>
     </div>
-    
-  </section>
+    <div class="mentions"><h4>Worthy mentions</h4><p><span class="hm" tabindex="0">Of Mice and Men<span class="tip">Short, sad, and there&#x27;s a rabbit situation. I had feelings.</span></span><span class="hm" tabindex="0">The Fellowship of the Ring<span class="tip">Nine walkers. Not one cat. Points deducted.</span></span><span class="hm" tabindex="0">The Song of Achilles<span class="tip">Achilles is basically a cat: gorgeous, sulky, fast. Patroclus is a saint.</span></span><span class="hm" tabindex="0">The Subtle Knife<span class="tip">A knife that cuts windows between worlds. I&#x27;d use it on the fridge.</span></span></p></div>
+  </section></div>
 </main>
+
+<section class="memoriam" id="memoriam">
+  <figure class="arch"><img src="img/mw-https-redrising-fandom-com-api-php-ragnar-volarus.jpg" alt="Ragnar Volarus" loading="lazy"></figure>
+  <div class="memoriam-text">
+    <p class="eyebrow">In memoriam</p>
+    <h2>Ragnar Volarus</h2>
+    <p class="of">Obsidian, of the Valkyrie Spires · Red Rising</p>
+    <p class="epitaph">Raised to be a weapon, chose to be a poet. The gentlest giant in fiction and the best friend a Reaper ever had.</p>
+    <p class="valkyrie">May the Valkyrie carry him home.</p>
+  </div>
+</section>
 
 <footer class="colophon">
   <div class="colophon-art"></div>
