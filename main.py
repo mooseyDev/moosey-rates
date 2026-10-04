@@ -25,6 +25,7 @@ from pathlib import Path
 
 from PIL import Image
 
+DOMAIN = "mooseyrates.com"
 ROOT = Path(__file__).parent
 OUT = ROOT / "docs"
 IMG = OUT / "img"
@@ -712,6 +713,8 @@ def build():
     OUT.mkdir(exist_ok=True)
     (OUT / "index.html").write_text(page, encoding="utf-8")
     (OUT / ".nojekyll").touch()  # stop Pages running Jekyll over a site that doesn't need it
+    # Pages reads the custom domain from this file; writing it every build keeps GitHub and the laptop in step
+    (OUT / "CNAME").write_text(DOMAIN + "\n")
     print(f"Built {OUT / 'index.html'}")
 
 
