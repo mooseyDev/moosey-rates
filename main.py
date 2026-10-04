@@ -505,7 +505,8 @@ def card(it, rank, aspect, label=None, big=False, guest=False):
     else:
         stamp = f"<b>{fmt(it['score'])}</b><small>Moosey rates</small>"
         sig = "M."
-        score_html = f'<span class="score{" gold" if it["score"] >= 9.5 else ""}">{fmt(it["score"])}</span>'
+        score_html = (f'<span class="score tick{" gold" if it["score"] >= 9.5 else ""}" style="--t:{round(it["score"] * 10)}" '
+                      f'aria-label="{fmt(it["score"])}"><span class="static">{fmt(it["score"])}</span></span>')
     tag = f'<span class="tag">{e(label)}</span>' if label else ""
     return f"""
       <article class="card{' big' if big else ''}" tabindex="0" style="--i:{rank}">
@@ -610,8 +611,11 @@ def cat_svg():
         f'r="{13 - 5 * u + (2.2 if i % 2 else 0):.1f}"/>'
         for i, u in ((i, i / 15) for i in range(16))
     ]
-    # split at the ninth puff so the tip can flick on its own joint while the whole tail sways
-    base, end = "".join(puffs[:9]), "".join(puffs[9:])
+    # three jointed segments; each one lags the last, so a wave travels from base to tip
+    def along(u):
+        return 140 + 30 * math.sin(u * 2.4) - 4 * u, 196 - 70 * u + 10 * u * u
+    base, mid, end = "".join(puffs[:6]), "".join(puffs[6:11]), "".join(puffs[11:])
+    (mx, my), (tx, ty) = along(5.5 / 15), along(10.5 / 15)
     tip = fluff(166.5, 128, 10, 10, 9, 0.22, 11)
     return f"""<svg class="cat" viewBox="0 0 200 230" role="img" aria-label="A long-haired black cat with golden eyes, sitting under a crescent moon">
         <defs>
@@ -624,7 +628,7 @@ def cat_svg():
         <path class="moon" d="M160,22 a18,18 0 1,0 18,26 a14,14 0 1,1 -18,-26Z"/>
         {sparkle(30, 46, 6, 0)}{sparkle(176, 92, 4.5, 1.3)}{sparkle(22, 150, 4, 2.1)}{sparkle(60, 20, 3.5, .7)}
         <g filter="url(#rim)" fill="{fur}">
-          <g class="tail">{base}<g class="tail-tip">{end}<path d="{tip}"/></g></g>
+          <g class="tail">{base}<g class="tail-mid" style="transform-origin:{mx:.1f}px {my:.1f}px">{mid}<g class="tail-tip" style="transform-origin:{tx:.1f}px {ty:.1f}px"><g class="tail-flick" style="transform-origin:{tx:.1f}px {ty:.1f}px">{end}<path d="{tip}"/></g></g></g></g>
           <path d="{body}"/><path d="{chest}"/>
           <ellipse cx="84" cy="206" rx="13" ry="9"/><ellipse cx="116" cy="206" rx="13" ry="9"/>
           <path d="M60,86 L68,48 Q72,41 78,46 L98,66Z"/><path d="M140,86 L132,48 Q128,41 122,46 L102,66Z"/>
@@ -650,10 +654,22 @@ def cat_svg():
       </svg>"""
 
 
+def embers(n=11):
+    rnd = random.Random(7)  # seeded: the same embers every build
+    return "".join(
+        f'<i style="--x:{rnd.uniform(14, 86):.0f}%;--sz:{rnd.uniform(2, 4.2):.1f}px;--dx:{rnd.uniform(-26, 26):.0f}px;'
+        f'--rise:{rnd.uniform(150, 250):.0f}px;--d:{rnd.uniform(4.5, 8.5):.1f}s;--dl:{-rnd.uniform(0, 8):.1f}s"></i>'
+        for _ in range(n)
+    )
+
+
 def memorial(m):
     return f"""
 <section class="memoriam" id="memoriam">
-  <figure class="arch"><img src="{m['img']}" alt="Ragnar Volarus" loading="lazy"></figure>
+  <div class="shrine">
+    <figure class="arch"><img src="{m['img']}" alt="Ragnar Volarus" loading="lazy"></figure>
+    <div class="embers" aria-hidden="true">{embers()}</div>
+  </div>
   <div class="memoriam-text">
     <p class="eyebrow">In memoriam</p>
     <h2>{e(m['title'])}</h2>
@@ -724,13 +740,9 @@ TEMPLATE = """<!doctype html>
 </nav>
 
 <header class="hero" id="top">
-  <div class="hero-art">
-    <img class="haze" src="art/moose-ship.jpg" alt="" aria-hidden="true">
-    <img class="sharp" src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1024" height="1792">
-  </div>
   <div class="hero-text">
     <p class="kicker"><span>Vol. I</span><span>Autumn MMXXVI</span><span>Price: your time</span></p>
-    <h1><span class="w1">Moosey</span><em class="w2">Rates</em></h1>
+    <h1><span class="w1">Moosey</span><em class="w2" data-text="Rates">Rates</em></h1>
     <p class="deck">A ledger of the records, films, series and games that earned their keep, plus a guest column from the cat.
       Scores out of ten. <em>Opinions out of line.</em></p>
     <div class="contents">
@@ -738,7 +750,10 @@ TEMPLATE = """<!doctype html>
       <ol>{toc}</ol>
     </div>
   </div>
-  <p class="plate-cap"><span>Pl. I.</span> The critic, en route to an opinion.</p>
+  <figure class="plate">
+    <div class="frame"><img src="art/moose-ship.jpg" alt="An engraved moose standing on the deck of a pirate galleon on a red sea" width="1024" height="1792"></div>
+    <figcaption><span>Pl. I.</span> The critic, en route to an opinion.</figcaption>
+  </figure>
 </header>
 
 <section class="five" id="five">
@@ -836,56 +851,43 @@ img{display:block;max-width:100%}
 .links a:hover::after{transform:scaleX(1)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:clip;
-  padding:7rem clamp(1rem,6vw,6rem) 4rem max(clamp(1rem,6vw,6rem),calc((100vw - 1320px) / 2))}
-.hero-text{position:relative;z-index:1;max-width:44rem}
-
-/* The painting bleeds in from the right. Two copies: a blurred one that reaches further in,
-   and a sharp one on top that fades out sooner, so it goes sharp -> haze -> nothing. */
-/* shown whole at its own proportions, so it's never blown up past its pixels */
-.hero-art{position:absolute;top:0;bottom:0;margin:auto 0;right:clamp(0rem,6vw,9rem);height:min(96%,64rem);aspect-ratio:1024/1792;
-  animation:settle 9s var(--ease) both}
-.hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 52%}
-.hero-art .haze{filter:blur(30px) saturate(1.2) brightness(.8);opacity:.9;transform:scale(1.22);
-  /* closest-side: the fade must reach zero inside the box, or the box edge shows as a hard line */
-  -webkit-mask:radial-gradient(closest-side,#000 30%,transparent 100%);
-  mask:radial-gradient(closest-side,#000 30%,transparent 100%);
-  animation:fade 2.4s .2s ease both}
-.hero-art .sharp{
-  -webkit-mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
-  mask:radial-gradient(closest-side,#000 38%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.25) 82%,transparent 100%);
+.hero{
+  min-height:100svh;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,5rem);
+  align-items:center;padding:7rem clamp(1rem,6vw,6rem) 4rem;max-width:1440px;margin:0 auto;
+}
+.plate{justify-self:center;width:min(100%,430px);animation:rise 1.4s .3s var(--ease) both}
+.frame{position:relative;padding:12px;border:1px solid rgba(236,223,198,.28);background:rgba(236,223,198,.03);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 120px -30px rgba(194,74,44,.45)}
+.frame::before{content:"";position:absolute;inset:5px;border:1px solid rgba(236,223,198,.12);pointer-events:none}
+.frame img{width:100%;height:auto;aspect-ratio:1024/1792;object-fit:cover;max-height:72svh;
   animation:develop 3.2s .4s var(--ease) both}
-/* only darken under the nav bar; a full vignette left a visible seam at the art's left edge */
-.hero-art::after{content:"";position:absolute;inset:-8% -20%;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse at 55% 55%,rgba(194,74,44,.22),transparent 65%)}
-.plate-cap{position:absolute;z-index:1;right:clamp(1rem,4vw,3rem);bottom:2rem;font-style:italic;font-size:.92rem;
-  color:var(--paper-dim);text-shadow:0 1px 10px #000;animation:rise 1s 1.4s var(--ease) both}
-.plate-cap span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;margin-right:.3rem}
-@keyframes settle{from{transform:scale(1.06)}to{transform:none}}
-@keyframes fade{from{opacity:0}}
-@keyframes breathe{from{transform:none}to{transform:scale(1.05) translateY(-1%)}}
+.plate figcaption{margin-top:.9rem;text-align:center;font-style:italic;color:var(--muted);font-size:.95rem}
+.plate figcaption span{font-style:normal;font-family:"IM Fell English SC",serif;letter-spacing:.12em;color:var(--paper-dim);margin-right:.3rem}
 .kicker{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;font:.8rem/1 "IM Fell English SC",serif;letter-spacing:.2em;color:var(--muted);
   padding-bottom:1.1rem;border-bottom:1px solid var(--line);margin-bottom:1.6rem;animation:rise 1s .1s var(--ease) both}
 .kicker span+span::before{content:"✦";margin-right:1.4rem;color:var(--blood);font-size:.6rem;vertical-align:.15em}
 h1{font-family:"IM Fell English",serif;font-weight:400;line-height:.82;letter-spacing:-.035em;font-size:clamp(4.4rem,12.5vw,11rem)}
 h1 .w1{display:block;animation:rise 1.2s .2s var(--ease) both}
-h1 .w2{display:block;padding-left:.55em;color:var(--amber);
+h1 .w2{display:block;position:relative;isolation:isolate;padding-left:.55em;color:var(--amber);
   text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);
-  animation:rise 1.2s .38s var(--ease) both,flame 7s 1.6s linear infinite}
-/* irregular stops so it gutters like a candle rather than pulsing like a screensaver */
-@keyframes flame{
-  0%,100%{color:#e08a32;text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25)}
-  9%{color:#e8923a;text-shadow:0 0 .42em rgba(240,150,60,.46),0 0 1.35em rgba(200,62,31,.31)}
-  13%{color:#db8530;text-shadow:0 0 .31em rgba(224,138,50,.3),0 0 1.1em rgba(184,50,31,.21)}
-  24%{color:#e48e36;text-shadow:0 0 .4em rgba(236,146,56,.42),0 0 1.3em rgba(196,58,31,.28)}
-  31%{color:#e08a32;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.18em rgba(184,50,31,.24)}
-  44%{color:#ea953c;text-shadow:0 0 .45em rgba(244,156,64,.5),0 0 1.42em rgba(204,64,31,.33)}
-  47%{color:#d98230;text-shadow:0 0 .3em rgba(220,132,48,.28),0 0 1.05em rgba(180,48,31,.2)}
-  52%{color:#e38d35;text-shadow:0 0 .38em rgba(232,142,54,.4),0 0 1.26em rgba(192,56,31,.27)}
-  68%{color:#df8932;text-shadow:0 0 .34em rgba(224,138,50,.34),0 0 1.2em rgba(184,50,31,.25)}
-  79%{color:#e7913a;text-shadow:0 0 .43em rgba(240,152,62,.47),0 0 1.38em rgba(200,62,31,.31)}
-  83%{color:#dc8631;text-shadow:0 0 .32em rgba(224,136,50,.31),0 0 1.12em rgba(184,50,31,.22)}
+  animation:rise 1.2s .38s var(--ease) both,burn 3.7s 1.6s infinite}
+/* the flame: a blurred copy of the word behind itself, licking upwards on irregular beats */
+h1 .w2::before{content:attr(data-text);position:absolute;inset:0;padding-left:.55em;z-index:-1;
+  color:#ff8a2a;filter:blur(.14em);opacity:.5;transform-origin:50% 90%;animation:lick 2.3s 1.6s infinite}
+@keyframes lick{
+  0%,100%{opacity:.5;transform:none}
+  11%{opacity:.8;transform:translateY(-.035em) scaleY(1.06)}
+  17%{opacity:.36;transform:translateY(.005em) scaleY(.98)}
+  29%{opacity:.72;transform:translateY(-.025em) scaleY(1.05) skewX(-1.2deg)}
+  38%{opacity:.44;transform:scaleY(1.01)}
+  52%{opacity:.85;transform:translateY(-.045em) scaleY(1.08) skewX(1deg)}
+  58%{opacity:.4;transform:none}
+  71%{opacity:.68;transform:translateY(-.02em) scaleY(1.04) skewX(-.6deg)}
+  84%{opacity:.34;transform:scaleY(.99)}
+  93%{opacity:.74;transform:translateY(-.03em) scaleY(1.05)}
 }
+@keyframes burn{0%,100%{filter:brightness(1)}13%{filter:brightness(1.1)}19%{filter:brightness(.93)}
+  47%{filter:brightness(1.13)}53%{filter:brightness(.91)}78%{filter:brightness(1.07)}}
 .deck{max-width:32rem;margin-top:2rem;font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--paper-2);animation:rise 1s .6s var(--ease) both}
 .deck em{color:var(--paper)}
 .contents{margin-top:2.6rem;max-width:26rem;animation:rise 1s .8s var(--ease) both}
@@ -1061,12 +1063,17 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .cat .moon{fill:#f3e9c6;filter:drop-shadow(0 0 8px rgba(243,233,198,.55))}
 .cat .spark{fill:#ece6ff;transform-box:fill-box;transform-origin:center;animation:sparkle 3.2s ease-in-out infinite}
 .cat .eyes{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite}
-.cat .tail{transform-box:view-box;transform-origin:140px 198px;animation:sway 6.5s ease-in-out infinite}
-.cat .tail-tip{transform-box:view-box;transform-origin:167px 160px;animation:flick 8s ease-in-out infinite}
+.cat .tail,.cat .tail-mid,.cat .tail-tip,.cat .tail-flick{transform-box:view-box}
+.cat .tail{transform-origin:140px 198px;animation:wave-a 4.8s ease-in-out infinite}
+.cat .tail-mid{animation:wave-b 4.8s -4.1s ease-in-out infinite}
+.cat .tail-tip{animation:wave-c 4.8s -3.4s ease-in-out infinite}
+.cat .tail-flick{animation:flick 9s 2s ease-in-out infinite}
+@keyframes wave-a{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(7deg)}}
+@keyframes wave-b{0%,100%{transform:rotate(-11deg)}50%{transform:rotate(11deg)}}
+@keyframes wave-c{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(16deg)}}
 .cat .pupils{transition:transform .35s cubic-bezier(.3,.7,.3,1);animation:glance 13s ease-in-out infinite}
 .gaze{position:absolute;z-index:3;top:-6rem;bottom:0;left:calc(50% - 50vw);width:100vw;
   display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(6,1fr)}
-@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
 @keyframes flick{0%,55%,100%{transform:rotate(0)}61%{transform:rotate(16deg)}67%{transform:rotate(-7deg)}73%{transform:rotate(9deg)}82%{transform:rotate(0)}}
 /* left alone, the cat glances about the room */
 @keyframes glance{0%,26%,100%{transform:none}31%,44%{transform:translate(-3.5px,.6px)}50%,62%{transform:translate(3.2px,-1.2px)}68%,80%{transform:translate(.4px,2.2px)}86%{transform:none}}
@@ -1096,6 +1103,17 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   padding-top:clamp(4rem,8vw,6rem);padding-bottom:clamp(3rem,6vw,4rem)}
 .memoriam::before{content:"";position:absolute;top:0;left:50%;width:min(60%,22rem);height:1px;transform:translateX(-50%);
   background:linear-gradient(90deg,transparent,rgba(236,223,198,.3),transparent)}
+.shrine{position:relative}
+.embers{position:absolute;inset:0;pointer-events:none}
+.embers i{position:absolute;bottom:6%;left:var(--x);width:var(--sz);height:var(--sz);border-radius:50%;
+  background:#ffc070;box-shadow:0 0 6px 2px rgba(255,140,50,.75),0 0 16px 5px rgba(224,90,30,.3);
+  opacity:0;animation:ember var(--d) var(--dl) linear infinite}
+@keyframes ember{
+  0%{opacity:0;transform:translate(0,0) scale(1)}
+  12%{opacity:.95}
+  45%{transform:translate(var(--dx),calc(var(--rise) * -.45)) scale(.85)}
+  75%{opacity:.55}
+  100%{opacity:0;transform:translate(calc(var(--dx) * -.5),calc(var(--rise) * -1)) scale(.35)}}
 .arch{width:clamp(130px,18vw,180px);aspect-ratio:3/4;border-radius:999px 999px 6px 6px;overflow:hidden;padding:6px;
   border:1px solid rgba(236,223,198,.25);animation:candle 4s ease-in-out infinite alternate}
 .arch img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:999px 999px 3px 3px;
@@ -1109,6 +1127,22 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
 .memoriam .of{font:.76rem/1.4 "IM Fell English SC",serif;letter-spacing:.16em;color:var(--muted);margin-top:.5rem}
 .memoriam .epitaph{margin-top:1rem;font-style:italic;font-size:1.15rem;color:var(--paper-2);max-width:30rem}
 .memoriam .valkyrie{margin-top:.9rem;font:italic 1.05rem "IM Fell English",serif;color:var(--amber)}
+
+/* ---------- ticking scores ----------
+   Registered integer properties can be animated, and counters can print them. The score is stored
+   as tenths (97), split into 9 and 7 by integer rounding, and scrubbed by the card's scroll position. */
+@property --s{syntax:'<integer>';inherits:false;initial-value:0}
+@property --si{syntax:'<integer>';inherits:false;initial-value:0}
+@property --sd{syntax:'<integer>';inherits:false;initial-value:0}
+@supports (animation-timeline: view()){
+  .card{view-timeline-name:--card}
+  .tick .static{display:none}
+  .tick{--s:var(--t);--si:calc((var(--s) - 5) / 10);--sd:calc(var(--s) - var(--si) * 10);
+    counter-reset:si var(--si) sd var(--sd);
+    animation:tick linear both;animation-timeline:--card;animation-range:entry 35% entry 100%}
+  .tick::after{content:counter(si) "." counter(sd)}
+  @keyframes tick{from{--s:0}to{--s:var(--t)}}
+}
 
 /* ---------- motion ---------- */
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
@@ -1132,19 +1166,9 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .nuggets ul{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:860px){
-  /* phones: the painting becomes a cover that dissolves downwards into the title */
-  .hero{display:block;padding:56svh 1.25rem 3rem}
-  .hero-art{left:0;right:0;width:100%;bottom:auto;margin:0;aspect-ratio:auto;height:82svh;animation:settle 9s var(--ease) both,breathe 22s 9s ease-in-out infinite alternate}
-  .hero-art img{object-position:50% 46%}
-  .hero-art .haze{transform:scale(1.1);
-    -webkit-mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent);mask:linear-gradient(to bottom,transparent 30%,#000 55%,#000 70%,transparent)}
-  .hero-art .sharp{-webkit-mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%);
-    mask:linear-gradient(to bottom,#000 32%,rgba(0,0,0,.4) 52%,transparent 68%)}
-  .hero-art::after{inset:0;z-index:0;background:linear-gradient(to bottom,rgba(17,12,9,.55),transparent 22%)}
-  .hero h1{text-shadow:0 4px 30px rgba(17,12,9,.9)}
-  .kicker{border-bottom-color:rgba(236,223,198,.22)}
-  .plate-cap{display:none}
-  .kicker{text-shadow:0 1px 12px rgba(17,12,9,.95)}
+  .hero{grid-template-columns:1fr;padding-top:6rem}
+  .plate{width:min(72%,340px)}
+  .frame img{max-height:60svh}
   .kicker span:nth-child(3){display:none}
   .memoriam{grid-template-columns:1fr;justify-items:center;text-align:center}
   .grid{grid-template-columns:repeat(3,1fr)}
