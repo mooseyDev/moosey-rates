@@ -87,24 +87,22 @@ h1{font-family:"IM Fell English",serif;font-weight:400;line-height:.82;letter-sp
 h1 .w1{display:block;animation:rise 1.2s .2s var(--ease) both}
 h1 .w2{display:block;position:relative;isolation:isolate;padding-left:.55em;color:var(--amber);
   text-shadow:0 0 .35em rgba(224,138,50,.35),0 0 1.2em rgba(184,50,31,.25);
-  animation:rise 1.2s .38s var(--ease) both,burn 3.7s 1.6s infinite}
+  animation:rise 1.2s .38s var(--ease) both,burn 6.4s 1.6s ease-in-out infinite}
 /* the flame: a blurred copy of the word behind itself, licking upwards on irregular beats */
 h1 .w2::before{content:attr(data-text);position:absolute;inset:0;padding-left:.55em;z-index:-1;
-  color:#ff8a2a;filter:blur(.14em);opacity:.5;transform-origin:50% 90%;animation:lick 2.3s 1.6s infinite}
+  color:#ff8a2a;filter:blur(.14em);opacity:.5;transform-origin:50% 90%;animation:lick 5.2s 1.6s ease-in-out infinite}
+/* a candle, not a bonfire: small swings, slow beats, the odd soft gutter */
 @keyframes lick{
-  0%,100%{opacity:.5;transform:none}
-  11%{opacity:.8;transform:translateY(-.035em) scaleY(1.06)}
-  17%{opacity:.36;transform:translateY(.005em) scaleY(.98)}
-  29%{opacity:.72;transform:translateY(-.025em) scaleY(1.05) skewX(-1.2deg)}
-  38%{opacity:.44;transform:scaleY(1.01)}
-  52%{opacity:.85;transform:translateY(-.045em) scaleY(1.08) skewX(1deg)}
-  58%{opacity:.4;transform:none}
-  71%{opacity:.68;transform:translateY(-.02em) scaleY(1.04) skewX(-.6deg)}
-  84%{opacity:.34;transform:scaleY(.99)}
-  93%{opacity:.74;transform:translateY(-.03em) scaleY(1.05)}
+  0%,100%{opacity:.46;transform:none}
+  18%{opacity:.54;transform:translateY(-.006em) scaleY(1.012)}
+  27%{opacity:.43;transform:none}
+  46%{opacity:.52;transform:translateY(-.004em) scaleY(1.008)}
+  61%{opacity:.4;transform:none}
+  64%{opacity:.5;transform:translateY(-.005em) scaleY(1.01)}
+  83%{opacity:.45;transform:none}
 }
-@keyframes burn{0%,100%{filter:brightness(1)}13%{filter:brightness(1.1)}19%{filter:brightness(.93)}
-  47%{filter:brightness(1.13)}53%{filter:brightness(.91)}78%{filter:brightness(1.07)}}
+@keyframes burn{0%,100%{filter:brightness(1)}22%{filter:brightness(1.03)}31%{filter:brightness(.98)}
+  58%{filter:brightness(1.025)}62%{filter:brightness(.975)}86%{filter:brightness(1.02)}}
 .deck{max-width:32rem;margin-top:2rem;font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--paper-2);animation:rise 1s .6s var(--ease) both}
 .deck em{color:var(--paper)}
 .contents{margin-top:2.6rem;max-width:26rem;animation:rise 1s .8s var(--ease) both}
@@ -426,7 +424,7 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   html{scroll-behavior:auto}
   .grid .card,.five-grid .card,.sec-head,.mentions,.nuggets,.memoriam,
   .interlude-art,.hero-art,.plate,.kicker,h1 .w1,.deck,.contents,.bar{animation:none!important}
-  h1 .w2{animation:burn 3.7s infinite!important}
+  h1 .w2{animation:burn 6.4s ease-in-out infinite!important}
 }
 .guest-wrap:has(.gaze i:nth-child(1):hover) .pupils{animation:none;transform:translate(-3.92px,-0.50px)}
 .guest-wrap:has(.gaze i:nth-child(2):hover) .pupils{animation:none;transform:translate(-3.89px,-0.61px)}
