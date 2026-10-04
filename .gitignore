@@ -1,0 +1,4 @@
+# The source paintings are 600 KB PNGs; main.py publishes shrunk copies into docs/art.
+/*.png
+__pycache__/
+.DS_Store
