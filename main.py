@@ -714,7 +714,7 @@ def build():
     (OUT / "index.html").write_text(page, encoding="utf-8")
     (OUT / ".nojekyll").touch()  # stop Pages running Jekyll over a site that doesn't need it
     # Pages reads the custom domain from this file; writing it every build keeps GitHub and the laptop in step
-    (OUT / "CNAME").write_text(DOMAIN + "\n")
+    (OUT / "CNAME").write_text(DOMAIN)  # no newline: matches the file GitHub writes
     print(f"Built {OUT / 'index.html'}")
 
 
@@ -1145,8 +1145,9 @@ main>section:last-child{padding-bottom:clamp(2rem,4vw,3rem)}
   .tick .static{display:none}
   .tick{--s:var(--t);--si:calc((var(--s) - 5) / 10);--sd:calc(var(--s) - var(--si) * 10);
     counter-reset:si var(--si) sd var(--sd);
-    animation:tick linear both;animation-timeline:--card;animation-range:entry 35% entry 100%}
+    animation:tick linear both;animation-timeline:--card;animation-range:entry 95% cover 70%}
   .tick::after{content:counter(si) "." counter(sd)}
+  /* starts once the score itself is on screen and runs until the card nears the top: ~2x the old distance */
   @keyframes tick{from{--s:0}to{--s:var(--t)}}
 }
 
